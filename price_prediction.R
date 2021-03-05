@@ -7,3 +7,5 @@ dat = Quandl(code = "HKEX/03988",type="xts")
 
 head(dat)
 tail(dat)
+
+Test
