@@ -2,6 +2,8 @@ import quandl
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
 
 # 03988 = Stock price, Bank Of China, date and nominal price (closing price)
 quandl.ApiConfig.api_key = 'puJtYkz3w2mjsUvx_38R'
@@ -26,20 +28,21 @@ plt.plot(dat1)
 #plt.show()
 
 # Training and test data
-#train_start = 0
-#train_end = int(np.floor(0.8*n))
-#test_start = train_end
-#test_end = n
-#data_train = dat1[np.arange(train_start, train_end), :]
-#data_test = dat1[np.arange(test_start, test_end), :]
+dat1_train = dat1.head(int(len(dat1)*(0.65)))
+print(dat1_train)
+dat1_test = dat1.tail(int(len(dat1)*(0.25)))
+print(dat1_test)
 
 
-dat1.tail(5)
-
-#train = head(dat1,round(0.65*nrow(dat1))) 
-#test = tail(dat1,round(0.25*nrow(dat1)))
-
-
+# Scale data
+scaler = MinMaxScaler()
+dat1_train = scaler.fit_transform(dat1_train)
+dat1_test = scaler.transform(dat1_test)
+# Build X and y
+X_train = dat1_train[:, 1:]
+y_train = dat1_train[:, 0]
+X_test = dat1_test[:, 1:]
+y_test = dat1_test[:, 0]
 
 
 
