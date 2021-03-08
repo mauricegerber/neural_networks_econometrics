@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow as tf
+#import tensorflow.compat.v1 as tf
+#tf.disable_v2_behavior()
 
 # 03988 = Stock price, Bank Of China, date and nominal price (closing price)
 quandl.ApiConfig.api_key = 'puJtYkz3w2mjsUvx_38R'
@@ -44,6 +45,46 @@ y_train = dat1_train[:, 0]
 X_test = dat1_test[:, 1:]
 y_test = dat1_test[:, 0]
 
+# Define a and b as placeholders
+a = tf.placeholder(dtype=tf.int8)
+b = tf.placeholder(dtype=tf.int8)
 
+# Define the addition
+c = tf.add(a, b)
+print(c)
+
+# Initialize the graph
+graph = tf.Session()
+
+# Run the graph
+graph.run(c, feed_dict={a: 5, b: 4})
+
+# Placeholder
+X = tf.placeholder(dtype=tf.float32, shape=[None, n_stocks])
+#Y = tf.placeholder(dtype=tf.float32, shape=[None])
+
+# Model architecture parameters
+#n_stocks = 500
+#n_neurons_1 = 1024
+#n_neurons_2 = 512
+#n_neurons_3 = 256
+#n_neurons_4 = 128
+#n_target = 1
+# Layer 1: Variables for hidden weights and biases
+#W_hidden_1 = tf.Variable(weight_initializer([n_stocks, n_neurons_1]))
+#bias_hidden_1 = tf.Variable(bias_initializer([n_neurons_1]))
+# Layer 2: Variables for hidden weights and biases
+#W_hidden_2 = tf.Variable(weight_initializer([n_neurons_1, n_neurons_2]))
+#bias_hidden_2 = tf.Variable(bias_initializer([n_neurons_2]))
+# Layer 3: Variables for hidden weights and biases
+#W_hidden_3 = tf.Variable(weight_initializer([n_neurons_2, n_neurons_3]))
+#bias_hidden_3 = tf.Variable(bias_initializer([n_neurons_3]))
+# Layer 4: Variables for hidden weights and biases
+#W_hidden_4 = tf.Variable(weight_initializer([n_neurons_3, n_neurons_4]))
+#bias_hidden_4 = tf.Variable(bias_initializer([n_neurons_4]))
+
+# Output layer: Variables for output weights and biases
+#W_out = tf.Variable(weight_initializer([n_neurons_4, n_target]))
+#bias_out = tf.Variable(bias_initializer([n_target]))
 
 
