@@ -15,12 +15,14 @@ tail(dat)
 
 plot(dat, type = "l")
 
-data1 = sample.split(dat$price,SplitRatio = 0.2)
-#subsetting into Train data
-train =subset(dat$price,data1==TRUE)
+train = head(dat,round(0.65*nrow(dat))) 
+test = tail(dat,round(0.25*nrow(dat)))
 
+#data1 = sample.split(dat$price,SplitRatio = 0.2)
+##subsetting into Train data
+#train =subset(dat$price,data1==TRUE)
 #subsetting into Test data
-test =subset(dat$price,data1==FALSE)
+#test =subset(dat$price,data1==FALSE)
 
 head(test)
 tail(test)
