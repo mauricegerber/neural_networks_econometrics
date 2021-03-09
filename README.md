@@ -1,1 +1,1 @@
-# neural_networks_econometrics
+This project is being carried out in the 6th semester of the Bachelor's degree programme in Engineering and Management at the ZHAW Zurich University of Applied Sciences as part of the econometrics lectures.
