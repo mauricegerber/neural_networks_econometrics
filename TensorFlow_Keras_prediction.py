@@ -185,7 +185,7 @@ OPTIMIZER = "adam"
 BATCH_SIZE = 64
 EPOCHS = 1
 # Amazon stock market
-ticker = "AMZN"
+ticker = "^N225"
 ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
 # model name to save, making it as unique as possible based on parameters
 model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
@@ -350,16 +350,6 @@ csv_filename = os.path.join(csv_results_folder, model_name + ".csv")
 final_df.to_csv(csv_filename)
 
 
-
-
-
-print(data)
-
-
-print(data["X_train"])
-print(data["y_train"])
-print(data["X_test"])
-print(data["y_test"])
 
 
 
