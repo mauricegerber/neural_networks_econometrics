@@ -18,9 +18,9 @@ from tensorflow.keras.layers import LSTM
 
 
 # set seed, so we can get the same results after rerunning several times
-np.random.seed(314)
-tf.random.set_seed(314)
-random.seed(314)
+np.random.seed(1)
+tf.random.set_seed(1)
+random.seed(1)
 
 def shuffle_in_unison(a, b):
     # shuffle two arrays in the same way
@@ -183,7 +183,7 @@ BIDIRECTIONAL = False
 LOSS = "huber_loss"
 OPTIMIZER = "adam"
 BATCH_SIZE = 64
-EPOCHS = 5
+EPOCHS = 1
 # Amazon stock market
 ticker = "AMZN"
 ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
@@ -348,5 +348,19 @@ if not os.path.isdir(csv_results_folder):
     os.mkdir(csv_results_folder)
 csv_filename = os.path.join(csv_results_folder, model_name + ".csv")
 final_df.to_csv(csv_filename)
+
+
+
+
+
+print(data)
+
+
+print(data["X_train"])
+print(data["y_train"])
+print(data["X_test"])
+print(data["y_test"])
+
+
 
 
