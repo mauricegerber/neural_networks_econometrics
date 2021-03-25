@@ -16,6 +16,9 @@ import time
 import matplotlib.pyplot as plt
 from tensorflow.keras.layers import LSTM
 
+# Code Source + Erklärung
+# https://www.thepythoncode.com/article/stock-price-prediction-in-python-using-tensorflow-2-and-keras
+# http://colah.github.io/posts/2015-08-Understanding-LSTMs/
 
 # set seed, so we can get the same results after rerunning several times
 np.random.seed(1)
