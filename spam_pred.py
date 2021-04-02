@@ -1,4 +1,6 @@
 
+# https://www.thepythoncode.com/article/build-spam-classifier-keras-python
+
 import tqdm
 import numpy as np
 import keras_metrics # for recall and precision metrics
@@ -102,11 +104,11 @@ def get_embedding_vectors(tokenizer, dim=100):
 
 
 
-    def get_model(tokenizer, lstm_units):
-    """
-    Constructs the model,
-    Embedding vectors => LSTM => 2 output Fully-Connected neurons with softmax activation
-    """
+def get_model(tokenizer, lstm_units):
+    
+    #Constructs the model,
+    #Embedding vectors => LSTM => 2 output Fully-Connected neurons with softmax activation
+    
     # get the GloVe embedding vectors
     embedding_matrix = get_embedding_vectors(tokenizer)
     model = Sequential()
@@ -162,7 +164,6 @@ print(f"[+] Precision:   {precision*100:.2f}%")
 print(f"[+] Recall:   {recall*100:.2f}%")
 
 
-
 def get_predictions(text):
     sequence = tokenizer.texts_to_sequences([text])
     # pad the sequence
@@ -182,6 +183,6 @@ text = "Hi man, I was wondering if we can meet tomorrow."
 print(get_predictions(text))
 
 
-tensorboard --logdir="logs"
+# tensorboard --logdir="logs"
 
 # Go to the browser and type "localhost:6006" and go to various metrics, here is my result:
