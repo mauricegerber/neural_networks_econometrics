@@ -1,13 +1,6 @@
 #import tensorflow.compat.v1 as tf
 #tf.disable_v2_behavior()
 
-# 03988 = Stock price, Bank Of China, date and nominal price (closing price)
-#quandl.ApiConfig.api_key = 'puJtYkz3w2mjsUvx_38R'
-#dat1 = quandl.get('HKEX/03988', column_index='1')
-#print(dat1)
-# head-value; 2.84 / 2021-03-05, tail-value; 3.25 / 2014-02-21 
-#plt.plot(dat1)
-#plt.show()
 
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
@@ -23,11 +16,17 @@ import os
 import numpy as np
 import pandas as pd
 import time
+import random
 import matplotlib.pyplot as plt
 from tensorflow.keras.layers import LSTM
 from sklearn.preprocessing import MinMaxScaler
 
 # TEST FILE
+
+# set seed, so we can get the same results after rerunning several times
+np.random.seed(1)
+tf.random.set_seed(1)
+random.seed(1)
 
 
 pd.set_option('display.max_columns', None)
@@ -38,18 +37,20 @@ nikkei = si.get_data("^N225", start_date = "01/01/2010", end_date = "01/01/2021"
 
 nikkei = pd.DataFrame(data=nikkei)
 
-dat1 = nikkei[['adjclose', 'volume', 'open', 'high', 'low']]
+dat1 = nikkei[['open', 'high', 'low', 'close', 'adjclose', 'volume', 'ticker']]
 
 # add date as a column
 dat1.index.names = ['date']
-dat1.reset_index(inplace=True)
-dat1.drop(columns=["date"], inplace=True)
+#dat1.reset_index(inplace=True)
+#dat1.drop(columns=["date"], inplace=True)
+dat1 = dat1.assign(ticker='1')
+dat1['ticker'] = dat1['ticker'].astype(float)
 #print(dat1)
 
 # Training and test data
-dat1_train = dat1.head(int(len(dat1)*(0.65)))
+dat1_train = dat1.head(int(len(dat1)*(0.8)))
 print(dat1_train)
-dat1_test = dat1.tail(int(len(dat1)*(0.25)))
+dat1_test = dat1.tail(int(len(dat1)*(0.2)))
 print(dat1_test)
 
 # Scale data
@@ -116,7 +117,7 @@ N_LAYERS = 2
 # LSTM cell
 CELL = LSTM
 # LSTM neurons
-UNITS = 10
+UNITS = 256
 # 40% dropout
 DROPOUT = 0.4
 # whether to use bidirectional RNNs
@@ -128,7 +129,7 @@ BIDIRECTIONAL = False
 LOSS = "huber_loss"
 OPTIMIZER = "adam"
 BATCH_SIZE = 64
-EPOCHS = 5
+EPOCHS = 1
 
 
 
@@ -138,6 +139,7 @@ model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}
 #{LOSS}-{OPTIMIZER}-{CELL.__name__}-seq-{N_STEPS}-step-{LOOKUP_STEP}-layers-{N_LAYERS}-units-{UNITS}"
 if BIDIRECTIONAL:
     model_name += "-b"
+
 
 
 # construct the model
@@ -156,7 +158,7 @@ history = model.fit(x_train, y_train,
                     callbacks=[checkpointer, tensorboard],
                     verbose=1)
 
-
+print(dat1)
 
 
 
