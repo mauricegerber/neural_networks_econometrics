@@ -132,7 +132,6 @@ BATCH_SIZE = 64
 EPOCHS = 1
 
 
-
 # model name to save, making it as unique as possible based on parameters
 ticker = "N225"
 model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
