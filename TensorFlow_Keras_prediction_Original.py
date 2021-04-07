@@ -108,7 +108,7 @@ def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split
         result["X_train"], result["X_test"], result["y_train"], result["y_test"] = train_test_split(X, y, 
                                                                                 test_size=test_size, shuffle=shuffle)
     # get the list of test set dates
-        dates = result["X_test"][:, -1, -1]
+    dates = result["X_test"][:, -1, -1]
     # retrieve test features from the original dataframe
     result["test_df"] = result["df"].loc[dates]
     # remove duplicated dates in the testing dataframe
