@@ -133,7 +133,7 @@ EPOCHS = 1
 
 
 # model name to save, making it as unique as possible based on parameters
-ticker = "N225"
+ticker = "^N225"
 model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
 #{LOSS}-{OPTIMIZER}-{CELL.__name__}-seq-{N_STEPS}-step-{LOOKUP_STEP}-layers-{N_LAYERS}-units-{UNITS}"
 if BIDIRECTIONAL:

@@ -1,8 +1,3 @@
-import tensorflow as tf
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
-
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from sklearn import preprocessing
@@ -19,147 +14,223 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.layers import LSTM
 from sklearn.preprocessing import MinMaxScaler
 
-print("hello world")
+# TEST FILE
+
+
+pd.set_option('display.max_columns', None)
+#pd.set_option('display.max_rows', None)
+
+
+df = si.get_data("^N225", start_date = "01/01/2019", end_date = "01/01/2020")
+
+result = {}
+    # we will also return the original dataframe itself
+result['df'] = df.copy()
+
+df["date"] = df.index
+df.reset_index(inplace=True)
+
+feature_columns=['adjclose', 'volume', 'open', 'high', 'low']
+
+
+column_scaler = {}
+# scale the data (prices) from 0 to 1
+for column in feature_columns:
+    scaler = preprocessing.MinMaxScaler()
+    df[column] = scaler.fit_transform(np.expand_dims(df[column].values, axis=1))
+    column_scaler[column] = scaler # noch nicht sicher ob es gebraucht wird
+# add the MinMaxScaler instances to the result returned
+result["column_scaler"] = column_scaler
+
+
+lookup_step = 1 
+df['future'] = df['adjclose'].shift(-lookup_step) #time shift back
+
+
+last_sequence = np.array(df[feature_columns].tail(lookup_step))
+# drop NaNs
+df.dropna(inplace=True) # cut last row 
+
+
+n_steps = 50
+sequence_data = []
+sequences = deque(maxlen=n_steps)
+for entry, target in zip(df[feature_columns + ["date"]].values, df['future'].values):
+    sequences.append(entry)
+    if len(sequences) == n_steps:
+        sequence_data.append([np.array(sequences), target])
+
+print(last_sequence)
+last_sequence = list([s[:len(feature_columns)] for s in sequences]) + list(last_sequence)
+last_sequence = np.array(last_sequence).astype(np.float32)
+
+
+
+'''
+print(df)
+         index      open      high       low         close  adjclose  \
+0   2019-01-04  0.000000  0.000000  0.000000  19561.960938  0.000000   
+1   2019-01-07  0.065257  0.130416  0.142884  20038.970703  0.105904   
+2   2019-01-08  0.128391  0.148990  0.181906  20204.039062  0.142552   
+3   2019-01-09  0.160318  0.182281  0.229190  20427.060547  0.192067   
+4   2019-01-10  0.138808  0.148536  0.180975  20163.800781  0.133619  
+
+       volume ticker       date    future  
+0    0.787618  ^N225 2019-01-04  0.105904  
+1    0.700774  ^N225 2019-01-07  0.142552  
+2    0.742906  ^N225 2019-01-08  0.192067  
+3    0.625967  ^N225 2019-01-09  0.133619  
+4    0.633706  ^N225 2019-01-10  0.177112 
+'''
+
+
+''' 
+output of sequence_data.append
+jedes element aus der Liste besteht aus einer kleineren Liste, das erste Element der kleineren Liste
+ist ein np.array, welches n_steps Spalten des Dataframes enthaelt
+Das zweite Element dieser kleineren Liste ist der future Wert
+
+[[array([[0.0, 0.7876182287188306, 0.0, 0.0, 0.0,
+        Timestamp('2019-01-04 00:00:00')],
+       [0.10590430977625243, 0.7007738607050731, 0.06525682604901473,
+        0.1304161715626453, 0.14288360622878482,
+        Timestamp('2019-01-07 00:00:00')]], dtype=object), 0.14255230301513855], [array([[0.10590430977625243, 0.7007738607050731, 0.06525682604901473,
+        0.1304161715626453, 0.14288360622878482,
+        Timestamp('2019-01-07 00:00:00')],
+       [0.14255230301513855, 0.7429062768701633, 0.1283905696747043,
+        0.14899034302937952, 0.18190634149226614,
+        Timestamp('2019-01-08 00:00:00')]], dtype=object), 0.19206687917284704], [array([[0.14255230301513855, 0.7429062768701633, 0.1283905696747043,
+        0.14899034302937952, 0.18190634149226614,
+        Timestamp('2019-01-08 00:00:00')],
+       [0.19206687917284704, 0.6259673258813413, 0.1603182598297126,
+        0.1822808709567978, 0.2291898734593154,
+        Timestamp('2019-01-09 00:00:00')]], dtype=object), 0.13361871777337697]]
+'''
+'''
+output of df[feature_columns + ["date"]].values
+[[0.0 0.7876182287188306 0.0 0.0 0.0 Timestamp('2019-01-04 00:00:00')]
+ [0.10590430977625243 0.7007738607050731 0.06525682604901473
+  0.1304161715626453 0.14288360622878482 Timestamp('2019-01-07 00:00:00')]
+ [0.14255230301513855 0.7429062768701633 0.1283905696747043
+  0.14899034302937952 0.18190634149226614
+  Timestamp('2019-01-08 00:00:00')]
+ ...
+ [0.9371136653673746 0.27171109200343935 0.937436873301027
+  0.9394640976318485 0.9550716494320293 Timestamp('2019-12-25 00:00:00')]
+ [0.9686513633886049 0.3465176268271711 0.9316003779456556
+  0.9637130936585834 0.9535009808463863 Timestamp('2019-12-26 00:00:00')]
+ [0.9492916484723963 0.38521066208082544 0.9690330244546335
+  0.9718225866898278 0.9666068629673807 Timestamp('2019-12-27 00:00:00')]]
+  '''
+
+
+
+
+'''
+output of:
+np.expand_dims(df['close'].values, axis=1)
+
+[[10654.79003906]
+ [10681.83007812]
+ [10731.45019531]
+ ...
+ [26854.02929688]
+ [27568.15039062]
+ [27444.16992188]]
+
+after scale:
+
+ [[0.12874963]
+ [0.13121962]
+ [0.13151123]
+ ...
+ [0.96490293]
+ [0.97826252]
+ [1.        ]]
+'''
+
+
+
+'''
+
+
+nikkei = pd.DataFrame(data=nikkei)
+
+dat1 = nikkei[['open', 'high', 'low', 'close', 'adjclose', 'volume', 'ticker']]
+
+# add date as a column
+#dat1.index.names = ['date']
+#dat1.reset_index(inplace=True)
+#dat1.drop(columns=["date"], inplace=True)
+dat1 = dat1.assign(ticker='1')
+dat1['ticker'] = dat1['ticker'].astype(float)
+# print(dat1)
+
+
+#import tensorflow.compat.v1 as tf
+#tf.disable_v2_behavior()
+
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
+from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+from yahoo_fin import stock_info as si
+from collections import deque
+
+
+import os
+import numpy as np
+import pandas as pd
+import time
+import random
+import matplotlib.pyplot as plt
+from tensorflow.keras.layers import LSTM
+from sklearn.preprocessing import MinMaxScaler
+
+# TEST FILE
+
+# set seed, so we can get the same results after rerunning several times
+np.random.seed(1)
+tf.random.set_seed(1)
+random.seed(1)
 
 
 pd.set_option('display.max_columns', None)
 
 
 nikkei = si.get_data("^N225", start_date = "01/01/2010", end_date = "01/01/2021")
-print(nikkei)
+#print(nikkei)
 
 nikkei = pd.DataFrame(data=nikkei)
-dat1 = nikkei[['adjclose']]
 
-# add date as a column / drop date
+dat1 = nikkei[['open', 'high', 'low', 'close', 'adjclose', 'volume', 'ticker']]
+
+# add date as a column
 dat1.index.names = ['date']
-dat1.reset_index(inplace=True)
-dat1.drop(columns=["date"], inplace=True)
+#dat1.reset_index(inplace=True)
+#dat1.drop(columns=["date"], inplace=True)
+dat1 = dat1.assign(ticker='1')
+dat1['ticker'] = dat1['ticker'].astype(float)
 #print(dat1)
 
-# Dimensions of dataset
-n = dat1.shape[0]
-p = dat1.shape[1]
-
-# Make data a numpy array
-dat1 = dat1.values
-
 # Training and test data
-train_start = 0
-train_end = int(np.floor(0.8*n))
-test_start = train_end
-test_end = n
-data_train = dat1[np.arange(train_start, train_end), :]
-data_test = dat1[np.arange(test_start, test_end), :]
-
-#plt.plot(dat1)
-#plt.show()
+dat1_train = dat1.head(int(len(dat1)*(0.8)))
+print(dat1_train)
+dat1_test = dat1.tail(int(len(dat1)*(0.2)))
+print(dat1_test)
 
 # Scale data
-from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
-data_train = scaler.fit_transform(data_train)
-data_test = scaler.transform(data_test)
-
-# Build X and y
-X_train = data_train[:, 1:]
-y_train = data_train[:, 0]
-X_test = data_test[:, 1:]
-y_test = data_test[:, 0]
-
-
-n_stocks = 2711
-# Placeholder
-X = tf.placeholder(dtype=tf.float32, shape=[None, n_stocks])
-Y = tf.placeholder(dtype=tf.float32, shape=[None])
-
-# Initializers
-sigma = 1
-weight_initializer = tf.variance_scaling_initializer(mode="fan_avg", distribution="uniform", scale=sigma)
-bias_initializer = tf.zeros_initializer()
-
-# Model architecture parameters
-#n_stocks = 500
-n_neurons_1 = 1024
-n_neurons_2 = 512
-n_neurons_3 = 256
-n_neurons_4 = 128
-n_target = 1
-# Layer 1: Variables for hidden weights and biases
-W_hidden_1 = tf.Variable(weight_initializer([n_stocks, n_neurons_1]))
-bias_hidden_1 = tf.Variable(bias_initializer([n_neurons_1]))
-# Layer 2: Variables for hidden weights and biases
-W_hidden_2 = tf.Variable(weight_initializer([n_neurons_1, n_neurons_2]))
-bias_hidden_2 = tf.Variable(bias_initializer([n_neurons_2]))
-# Layer 3: Variables for hidden weights and biases
-W_hidden_3 = tf.Variable(weight_initializer([n_neurons_2, n_neurons_3]))
-bias_hidden_3 = tf.Variable(bias_initializer([n_neurons_3]))
-# Layer 4: Variables for hidden weights and biases
-W_hidden_4 = tf.Variable(weight_initializer([n_neurons_3, n_neurons_4]))
-bias_hidden_4 = tf.Variable(bias_initializer([n_neurons_4]))
-
-# Output layer: Variables for output weights and biases
-W_out = tf.Variable(weight_initializer([n_neurons_4, n_target]))
-bias_out = tf.Variable(bias_initializer([n_target]))
-
-# Hidden layer
-hidden_1 = tf.nn.relu(tf.add(tf.matmul(X, W_hidden_1), bias_hidden_1))
-hidden_2 = tf.nn.relu(tf.add(tf.matmul(hidden_1, W_hidden_2), bias_hidden_2))
-hidden_3 = tf.nn.relu(tf.add(tf.matmul(hidden_2, W_hidden_3), bias_hidden_3))
-hidden_4 = tf.nn.relu(tf.add(tf.matmul(hidden_3, W_hidden_4), bias_hidden_4))
-
-# Output layer (must be transposed)
-out = tf.transpose(tf.add(tf.matmul(hidden_4, W_out), bias_out))
-
-# Cost function
-mse = tf.reduce_mean(tf.squared_difference(out, Y))
-
-# Optimizer
-opt = tf.train.AdamOptimizer().minimize(mse)
+dat1_train = scaler.fit_transform(dat1_train)
+dat1_test = scaler.transform(dat1_test)
 
 
 
-# Make Session
-net = tf.Session()
-# Run initializer
-net.run(tf.global_variables_initializer())
+print(dat1_train)
 
-# Setup interactive plot
-plt.ion()
-fig = plt.figure()
-ax1 = fig.add_subplot(111)
-line1, = ax1.plot(y_test)
-line2, = ax1.plot(y_test*0.5)
-plt.show()
+ 
 
-# Number of epochs and batch size
-epochs = 10
-batch_size = 256
-
-for e in range(epochs):
-
-    # Shuffle training data
-    shuffle_indices = np.random.permutation(np.arange(len(y_train)))
-    X_train = X_train[shuffle_indices]
-    y_train = y_train[shuffle_indices]
-
-    # Minibatch training
-    for i in range(0, len(y_train) // batch_size):
-        start = i * batch_size
-        batch_x = X_train[start:start + batch_size]
-        batch_y = y_train[start:start + batch_size]
-        # Run optimizer with batch
-        net.run(opt, feed_dict={X: batch_x, Y: batch_y})
-
-        # Show progress
-        if np.mod(i, 5) == 0:
-            # Prediction
-            pred = net.run(out, feed_dict={X: X_test})
-            line2.set_ydata(pred)
-            plt.title('Epoch ' + str(e) + ', Batch ' + str(i))
-            file_name = 'img/epoch_' + str(e) + '_batch_' + str(i) + '.jpg'
-            plt.savefig(file_name)
-            plt.pause(0.01)
-# Print final MSE after Training
-mse_final = net.run(mse, feed_dict={X: X_test, Y: y_test})
-print(mse_final)
+'''
