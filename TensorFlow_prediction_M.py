@@ -29,18 +29,33 @@ pd.set_option('display.max_columns', None)
 #pd.set_option('display.max_rows', None)
 
 
-# INPUT
+## INPUT
 # Data
 ticker = "^N225"
 df = si.get_data(ticker, start_date = "01/01/2010", end_date = "01/01/2020")
 # Days into the future (y)
-lookup_step = 15 
-# Days back (X)
+lookup_step = 1 
+# Days back (X), Window size or the sequence length
 n_steps = 50
 # Test size
 test_size = 0.2
 # shuffle of training/test data
 shuffle = False
+# Layers 
+n_layers = 2
+# A dropout on the input means that for a given probability, 
+# the data on the input connection to each LSTM block will be 
+# excluded from node activation and weight updates. 
+dropout = 0.4
+# Optimizer
+optimizer = "adam"
+# Loss
+loss = "huber_loss"
+# LSTM cell
+cell = LSTM
+# LSTM neurons
+units = 256
+
 
 
 result = {}
@@ -50,7 +65,7 @@ result['df'] = df.copy()
 df["date"] = df.index
 df.reset_index(inplace=True)
 
-feature_columns=['adjclose', 'volume', 'open', 'high', 'low']
+feature_columns = ['adjclose', 'volume', 'open', 'high', 'low']
 
 
 column_scaler = {}
@@ -76,6 +91,7 @@ for entry, target in zip(df[feature_columns + ["date"]].values, df['future'].val
     sequences.append(entry)
     if len(sequences) == n_steps:
         sequence_data.append([np.array(sequences), target])
+
 
 last_sequence = list([s[:len(feature_columns)] for s in sequences]) + list(last_sequence)
 last_sequence = np.array(last_sequence).astype(np.float32)
@@ -125,37 +141,19 @@ result["X_test"] = result["X_test"][:, :, :len(feature_columns)].astype(np.float
 
 
 
-
-
-
-
-
-
-
-
-
-def create_model(sequence_length, n_features, units=256, cell=LSTM, n_layers=2, dropout=0.3,
-                loss="mean_absolute_error", optimizer="rmsprop", bidirectional=False):
+def create_model(sequence_length, n_features, units, cell, n_layers, dropout, loss, optimizer):
     model = Sequential()
     for i in range(n_layers):
         if i == 0:
             # first layer
-            if bidirectional:
-                model.add(Bidirectional(cell(units, return_sequences=True), batch_input_shape=(None, sequence_length, n_features)))
-            else:
-                model.add(cell(units, return_sequences=True, batch_input_shape=(None, sequence_length, n_features)))
+            model.add(cell(units, return_sequences=True, 
+                batch_input_shape=(None, sequence_length, n_features)))
         elif i == n_layers - 1:
             # last layer
-            if bidirectional:
-                model.add(Bidirectional(cell(units, return_sequences=False)))
-            else:
-                model.add(cell(units, return_sequences=False))
+            model.add(cell(units, return_sequences=False))
         else:
             # hidden layers
-            if bidirectional:
-                model.add(Bidirectional(cell(units, return_sequences=True)))
-            else:
-                model.add(cell(units, return_sequences=True))
+            model.add(cell(units, return_sequences=True))
         # add dropout after each layer
         model.add(Dropout(dropout))
     model.add(Dense(1, activation="linear"))
@@ -164,40 +162,40 @@ def create_model(sequence_length, n_features, units=256, cell=LSTM, n_layers=2, 
 
 
 # Window size or the sequence length
-N_STEPS = 50
+N_STEPS = n_steps
 # Lookup step, 1 is the next day
-LOOKUP_STEP = 15
+LOOKUP_STEP = lookup_step
 # whether to scale feature columns & output price as well
 SCALE = True
 scale_str = f"sc-{int(SCALE)}"
 # whether to shuffle the dataset
-SHUFFLE = True
+SHUFFLE = shuffle
 shuffle_str = f"sh-{int(SHUFFLE)}"
 # whether to split the training/testing set by date
 SPLIT_BY_DATE = False
 split_by_date_str = f"sbd-{int(SPLIT_BY_DATE)}"
 # test ratio size, 0.2 is 20%
-TEST_SIZE = 0.2
+TEST_SIZE = test_size
 # features to use
-FEATURE_COLUMNS = ["adjclose", "volume", "open", "high", "low"]
+FEATURE_COLUMNS = feature_columns
 # date now
 date_now = time.strftime("%Y-%m-%d")
 ### model parameters
-N_LAYERS = 2
+N_LAYERS = n_layers
 # LSTM cell
-CELL = LSTM
+CELL = cell
 # 256 LSTM neurons
-UNITS = 256
+UNITS = units
 # 40% dropout
-DROPOUT = 0.4
-# whether to use bidirectional RNNs
-BIDIRECTIONAL = False
+DROPOUT = dropout
+
+
 ### training parameters
 # mean absolute error loss
 # LOSS = "mae"
 # huber loss
-LOSS = "huber_loss"
-OPTIMIZER = "adam"
+LOSS = loss
+OPTIMIZER = optimizer
 BATCH_SIZE = 64
 EPOCHS = 1
 # Amazon stock market
@@ -206,8 +204,6 @@ ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
 # model name to save, making it as unique as possible based on parameters
 model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
 {LOSS}-{OPTIMIZER}-{CELL.__name__}-seq-{N_STEPS}-step-{LOOKUP_STEP}-layers-{N_LAYERS}-units-{UNITS}"
-if BIDIRECTIONAL:
-    model_name += "-b"
 
 
 ## create these folders if they does not exist
@@ -227,7 +223,7 @@ data = result
 #data["df"].to_csv(ticker_data_filename)
 # construct the model
 model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
-                    dropout=DROPOUT, optimizer=OPTIMIZER, bidirectional=BIDIRECTIONAL)
+                    dropout=DROPOUT, optimizer=OPTIMIZER)
 # some tensorflow callbacks
 checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"), save_weights_only=True, save_best_only=True, verbose=1)
 tensorboard = TensorBoard(log_dir=os.path.join("logs", model_name))
