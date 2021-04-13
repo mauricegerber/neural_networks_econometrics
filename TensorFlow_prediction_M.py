@@ -36,13 +36,13 @@ df = si.get_data(ticker, start_date = "01/01/2019", end_date = "01/01/2020")
 # Days into the future (y)
 lookup_step = 1 
 # Days back (X), Window size or the sequence length
-n_steps = 50
+n_steps = 30
 # Test size
 test_size = 0.2
 # shuffle of training/test data
 shuffle = False
 # Layers 
-n_layers = 2
+n_layers = 5
 # A dropout on the input means that for a given probability, 
 # the data on the input connection to each LSTM block will be 
 # excluded from node activation and weight updates. 
@@ -144,7 +144,6 @@ result["X_test"] = result["X_test"][:, :, :len(feature_columns)].astype(np.float
 
 
 
-
 def create_model(sequence_length, n_features, units, cell, n_layers, dropout, loss, optimizer):
     model = Sequential()
     for i in range(n_layers):
@@ -164,42 +163,8 @@ def create_model(sequence_length, n_features, units, cell, n_layers, dropout, lo
     model.compile(loss=loss, metrics=["mean_absolute_error"], optimizer=optimizer)
     return model
 
-
-# whether to scale feature columns & output price as well
-SCALE = True
-scale_str = f"sc-{int(SCALE)}"
-# whether to shuffle the dataset
-SHUFFLE = shuffle
-shuffle_str = f"sh-{int(SHUFFLE)}"
-# whether to split the training/testing set by date
-SPLIT_BY_DATE = False
-split_by_date_str = f"sbd-{int(SPLIT_BY_DATE)}"
 # date now
 date_now = time.strftime("%Y-%m-%d")
-# Window size or the sequence length
-#N_STEPS = n_steps
-# Lookup step, 1 is the next day
-#LOOKUP_STEP = lookup_step
-# test ratio size, 0.2 is 20%
-#TEST_SIZE = test_size
-# features to use
-#FEATURE_COLUMNS = feature_columns
-### model parameters
-#N_LAYERS = n_layers
-# LSTM cell
-#CELL = cell
-# 256 LSTM neurons
-#UNITS = units
-# 40% dropout
-#DROPOUT = dropout
-# Loss
-#LOSS = loss
-# Optimizer
-#OPTIMIZER = optimizer
-# Batch size
-#BATCH_SIZE = batch_size
-# Epochs
-#EPOCHS = epochs
 ### training parameters
 #ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
 # model name to save, making it as unique as possible based on parameters
@@ -211,8 +176,8 @@ date_now = time.strftime("%Y-%m-%d")
 #if not os.path.isdir("data"):
 #    os.mkdir("data")
 
-model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
-{loss}-{optimizer}-{cell.__name__}-seq-{n_steps}-step-{lookup_step}-layers-{n_layers}-units-{units}"
+model_name = f"{date_now}_{ticker}-{loss}-{optimizer}-{cell.__name__}-seq-{n_steps}-step-\
+{lookup_step}-layers-{n_layers}-units-{units}"
 
 # load the data
 data = result
@@ -235,19 +200,6 @@ history = model.fit(data["X_train"], data["y_train"],
 
 # print(data)
 
-def plot_graph(test_df):
-    """
-    This function plots true close price along with predicted close price
-    with blue and red colors respectively
-    """
-    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='green')
-    plt.plot(test_df[f'adjclose_{lookup_step}'], c='orange')
-    plt.xlabel("Days")
-    plt.ylabel("Price")
-    plt.legend(["Actual Price", "Predicted Price"])
-    plt.show()
-
-
 def get_final_df(model, data):
     """
     This function takes the `model` and `data` dict to 
@@ -264,9 +216,8 @@ def get_final_df(model, data):
     y_test = data["y_test"]
     # perform prediction and get prices
     y_pred = model.predict(X_test)
-    if SCALE:
-        y_test = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(np.expand_dims(y_test, axis=0)))
-        y_pred = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(y_pred))
+    y_test = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(np.expand_dims(y_test, axis=0)))
+    y_pred = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(y_pred))
     test_df = data["test_df"]
         # add predicted future prices to the dataframe
     test_df[f"adjclose_{lookup_step}"] = y_pred
@@ -300,10 +251,7 @@ def predict(model, data):
     # get the prediction (scaled from 0 to 1)
     prediction = model.predict(last_sequence)
     # get the price (by inverting the scaling)
-    if SCALE:
-        predicted_price = data["column_scaler"]["adjclose"].inverse_transform(prediction)[0][0]
-    else:
-        predicted_price = prediction[0][0]
+    predicted_price = data["column_scaler"]["adjclose"].inverse_transform(prediction)[0][0]
     return predicted_price
 
 # load optimal model weights from results folder
@@ -314,10 +262,7 @@ model.load_weights(model_path)
 # evaluate the model
 loss, mae = model.evaluate(data["X_test"], data["y_test"], verbose=0)
 # calculate the mean absolute error (inverse scaling)
-if SCALE:
-    mean_absolute_error = data["column_scaler"]["adjclose"].inverse_transform([[mae]])[0][0]
-else:
-    mean_absolute_error = mae
+mean_absolute_error = data["column_scaler"]["adjclose"].inverse_transform([[mae]])[0][0]
 
 # get the final dataframe for the testing set
 final_df = get_final_df(model, data)
@@ -348,6 +293,14 @@ profit_per_trade = total_profit / len(final_df)
 
 
 # plot true/pred prices graph
+def plot_graph(test_df):
+    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='green')
+    plt.plot(test_df[f'adjclose_{lookup_step}'], c='orange')
+    plt.xlabel("Days")
+    plt.ylabel("Price")
+    plt.legend(["Actual Price", "Predicted Price"])
+    plt.show()
+
 plot_graph(final_df)
 
 #print(final_df.tail(10))
@@ -357,11 +310,6 @@ plot_graph(final_df)
 #    os.mkdir(csv_results_folder)
 #csv_filename = os.path.join(csv_results_folder, model_name + ".csv")
 #final_df.to_csv(csv_filename)
-
-
-
-
-
 
 
 
