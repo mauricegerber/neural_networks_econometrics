@@ -32,7 +32,7 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-df = si.get_data(ticker, start_date = "01/01/2010", end_date = "01/01/2020")
+df = si.get_data(ticker, start_date = "01/01/2019", end_date = "01/01/2020")
 # Days into the future (y)
 lookup_step = 1 
 # Days back (X), Window size or the sequence length
@@ -55,6 +55,10 @@ loss = "huber_loss"
 cell = LSTM
 # LSTM neurons
 units = 256
+# Batch size
+batch_size = 64
+# Epochs
+epochs = 1
 
 
 
@@ -161,10 +165,6 @@ def create_model(sequence_length, n_features, units, cell, n_layers, dropout, lo
     return model
 
 
-# Window size or the sequence length
-N_STEPS = n_steps
-# Lookup step, 1 is the next day
-LOOKUP_STEP = lookup_step
 # whether to scale feature columns & output price as well
 SCALE = True
 scale_str = f"sc-{int(SCALE)}"
@@ -174,38 +174,35 @@ shuffle_str = f"sh-{int(SHUFFLE)}"
 # whether to split the training/testing set by date
 SPLIT_BY_DATE = False
 split_by_date_str = f"sbd-{int(SPLIT_BY_DATE)}"
-# test ratio size, 0.2 is 20%
-TEST_SIZE = test_size
-# features to use
-FEATURE_COLUMNS = feature_columns
 # date now
 date_now = time.strftime("%Y-%m-%d")
+# Window size or the sequence length
+#N_STEPS = n_steps
+# Lookup step, 1 is the next day
+#LOOKUP_STEP = lookup_step
+# test ratio size, 0.2 is 20%
+#TEST_SIZE = test_size
+# features to use
+#FEATURE_COLUMNS = feature_columns
 ### model parameters
-N_LAYERS = n_layers
+#N_LAYERS = n_layers
 # LSTM cell
-CELL = cell
+#CELL = cell
 # 256 LSTM neurons
-UNITS = units
+#UNITS = units
 # 40% dropout
-DROPOUT = dropout
-
-
+#DROPOUT = dropout
+# Loss
+#LOSS = loss
+# Optimizer
+#OPTIMIZER = optimizer
+# Batch size
+#BATCH_SIZE = batch_size
+# Epochs
+#EPOCHS = epochs
 ### training parameters
-# mean absolute error loss
-# LOSS = "mae"
-# huber loss
-LOSS = loss
-OPTIMIZER = optimizer
-BATCH_SIZE = 64
-EPOCHS = 1
-# Amazon stock market
-#ticker = "^N225"
-ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
+#ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
 # model name to save, making it as unique as possible based on parameters
-model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
-{LOSS}-{OPTIMIZER}-{CELL.__name__}-seq-{N_STEPS}-step-{LOOKUP_STEP}-layers-{N_LAYERS}-units-{UNITS}"
-
-
 ## create these folders if they does not exist
 #if not os.path.isdir("results"):
 #    os.mkdir("results")
@@ -214,37 +211,37 @@ model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}
 #if not os.path.isdir("data"):
 #    os.mkdir("data")
 
-
+model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
+{loss}-{optimizer}-{cell.__name__}-seq-{n_steps}-step-{lookup_step}-layers-{n_layers}-units-{units}"
 
 # load the data
 data = result
 
-# save the dataframe
-#data["df"].to_csv(ticker_data_filename)
 # construct the model
-model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
-                    dropout=DROPOUT, optimizer=OPTIMIZER)
+model = create_model(n_steps, len(feature_columns), loss=loss, units=units, 
+    cell=cell, n_layers=n_layers, dropout=dropout, optimizer=optimizer)
 # some tensorflow callbacks
-checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"), save_weights_only=True, save_best_only=True, verbose=1)
+checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"), 
+    save_weights_only=True, save_best_only=True, verbose=1)
 tensorboard = TensorBoard(log_dir=os.path.join("logs", model_name))
 # train the model and save the weights whenever we see 
 # a new optimal model using ModelCheckpoint
 history = model.fit(data["X_train"], data["y_train"],
-                    batch_size=BATCH_SIZE,
-                    epochs=EPOCHS,
+                    batch_size=batch_size,
+                    epochs=epochs,
                     validation_data=(data["X_test"], data["y_test"]),
                     callbacks=[checkpointer, tensorboard],
                     verbose=1)
 
-print(data)
+# print(data)
 
 def plot_graph(test_df):
     """
     This function plots true close price along with predicted close price
     with blue and red colors respectively
     """
-    plt.plot(test_df[f'true_adjclose_{LOOKUP_STEP}'], c='b')
-    plt.plot(test_df[f'adjclose_{LOOKUP_STEP}'], c='r')
+    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='green')
+    plt.plot(test_df[f'adjclose_{lookup_step}'], c='orange')
     plt.xlabel("Days")
     plt.ylabel("Price")
     plt.legend(["Actual Price", "Predicted Price"])
@@ -272,24 +269,24 @@ def get_final_df(model, data):
         y_pred = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(y_pred))
     test_df = data["test_df"]
         # add predicted future prices to the dataframe
-    test_df[f"adjclose_{LOOKUP_STEP}"] = y_pred
+    test_df[f"adjclose_{lookup_step}"] = y_pred
     # add true future prices to the dataframe
-    test_df[f"true_adjclose_{LOOKUP_STEP}"] = y_test
+    test_df[f"true_adjclose_{lookup_step}"] = y_test
     # sort the dataframe by date
     test_df.sort_index(inplace=True)
     final_df = test_df
     # add the buy profit column
     final_df["buy_profit"] = list(map(buy_profit, 
                                     final_df["adjclose"], 
-                                    final_df[f"adjclose_{LOOKUP_STEP}"], 
-                                    final_df[f"true_adjclose_{LOOKUP_STEP}"])
+                                    final_df[f"adjclose_{lookup_step}"], 
+                                    final_df[f"true_adjclose_{lookup_step}"])
                                     # since we don't have profit for last sequence, add 0's
                                     )
     # add the sell profit column
     final_df["sell_profit"] = list(map(sell_profit, 
                                     final_df["adjclose"], 
-                                    final_df[f"adjclose_{LOOKUP_STEP}"], 
-                                    final_df[f"true_adjclose_{LOOKUP_STEP}"])
+                                    final_df[f"adjclose_{lookup_step}"], 
+                                    final_df[f"true_adjclose_{lookup_step}"])
                                     # since we don't have profit for last sequence, add 0's
                                     )
     return final_df
@@ -297,7 +294,7 @@ def get_final_df(model, data):
 
 def predict(model, data):
     # retrieve the last sequence from data
-    last_sequence = data["last_sequence"][-N_STEPS:]
+    last_sequence = data["last_sequence"][-n_steps:]
     # expand dimension
     last_sequence = np.expand_dims(last_sequence, axis=0)
     # get the prediction (scaled from 0 to 1)
@@ -340,20 +337,20 @@ profit_per_trade = total_profit / len(final_df)
 
 
 # printing metrics
-print(f"Future price after {LOOKUP_STEP} days is {future_price:.2f}$")
-print(f"{LOSS} loss:", loss)
-print("Mean Absolute Error:", mean_absolute_error)
-print("Accuracy score:", accuracy_score)
-print("Total buy profit:", total_buy_profit)
-print("Total sell profit:", total_sell_profit)
-print("Total profit:", total_profit)
-print("Profit per trade:", profit_per_trade)
+#print(f"Future price after {LOOKUP_STEP} days is {future_price:.2f}$")
+#print(f"{LOSS} loss:", loss)
+#print("Mean Absolute Error:", mean_absolute_error)
+#print("Accuracy score:", accuracy_score)
+#print("Total buy profit:", total_buy_profit)
+#print("Total sell profit:", total_sell_profit)
+#print("Total profit:", total_profit)
+#print("Profit per trade:", profit_per_trade)
 
 
 # plot true/pred prices graph
 plot_graph(final_df)
 
-print(final_df.tail(10))
+#print(final_df.tail(10))
 # save the final dataframe to csv-results folder
 #csv_results_folder = "csv-results"
 #if not os.path.isdir(csv_results_folder):
