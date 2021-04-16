@@ -32,13 +32,16 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-df = si.get_data(ticker, start_date = "01/01/2019", end_date = "01/01/2020")
+start_date = "01/01/2019"
+end_date = "01/01/2020"
 # Days into the future (y)
 lookup_step = 1 
 # Days back (X), Window size or the sequence length
-n_steps = 30
+n_steps = 10
 # Test size
 test_size = 0.2
+# Feature column
+feature_columns=['adjclose', 'volume', 'open', 'high', 'low']
 # shuffle of training/test data
 shuffle = False
 # Layers 
@@ -60,64 +63,6 @@ batch_size = 64
 # Epochs
 epochs = 1
 
-
-
-result = {}
-    # we will also return the original dataframe itself
-result['df'] = df.copy()
-
-df["date"] = df.index
-df.reset_index(inplace=True)
-
-feature_columns = ['adjclose', 'volume', 'open', 'high', 'low']
-
-
-column_scaler = {}
-# scale the data (prices) from 0 to 1
-for column in feature_columns:
-    scaler = preprocessing.MinMaxScaler()
-    df[column] = scaler.fit_transform(np.expand_dims(df[column].values, axis=1))
-    column_scaler[column] = scaler # noch nicht sicher ob es gebraucht wird
-# add the MinMaxScaler instances to the result returned
-result["column_scaler"] = column_scaler
-
-df['future'] = df['adjclose'].shift(-lookup_step) #time shift back
-
-
-last_sequence = np.array(df[feature_columns].tail(lookup_step))
-# drop NaNs
-df.dropna(inplace=True) # cut last row 
-
-
-sequence_data = []
-sequences = deque(maxlen=n_steps)
-for entry, target in zip(df[feature_columns + ["date"]].values, df['future'].values):
-    sequences.append(entry)
-    if len(sequences) == n_steps:
-        sequence_data.append([np.array(sequences), target])
-
-
-last_sequence = list([s[:len(feature_columns)] for s in sequences]) + list(last_sequence)
-last_sequence = np.array(last_sequence).astype(np.float32)
-result['last_sequence'] = last_sequence
-
-
-X, y = [], []
-for seq, target in sequence_data:
-    X.append(seq)
-    y.append(target)
-
-# convert to numpy arrays
-X = np.array(X)
-y = np.array(y)
-
-# split the dataset into training & testing sets by date (not randomly splitting)
-train_samples = int((1 - test_size) * len(X))
-result["X_train"] = X[:train_samples]
-result["y_train"] = y[:train_samples]
-result["X_test"]  = X[train_samples:]
-result["y_test"]  = y[train_samples:]
-
 def shuffle_in_unison(a, b):
     # shuffle two arrays in the same way
     state = np.random.get_state()
@@ -125,22 +70,70 @@ def shuffle_in_unison(a, b):
     np.random.set_state(state)
     np.random.shuffle(b)
 
-if shuffle:
-    # shuffle the datasets for training (if shuffle parameter is set)
-    shuffle_in_unison(result["X_train"], result["y_train"])
-    shuffle_in_unison(result["X_test"], result["y_test"])
-
-
-
-dates = result["X_test"][:, -1, -1] # print dates only
-
-# retrieve test features from the original dataframe
-result["test_df"] = result["df"].loc[dates] # add original data from test period to result
-
-print(result["X_train"])
-# remove dates from the training/testing sets & convert to float32
-result["X_train"] = result["X_train"][:, :, :len(feature_columns)].astype(np.float32)
-result["X_test"] = result["X_test"][:, :, :len(feature_columns)].astype(np.float32)
+def load_data(ticker, start_date, end_date, n_steps=50, shuffle=True, lookup_step=1,
+                test_size=0.2, feature_columns=feature_columns):
+    # load it from yahoo_fin library
+    df = si.get_data(ticker, start_date, end_date)
+    # this will contain all the elements we want to return from this function
+    result = {}
+    # we will also return the original dataframe itself
+    result['df'] = df.copy()
+    # add date as a column
+    df["date"] = df.index
+    column_scaler = {}
+    # scale the data (prices) from 0 to 1
+    for column in feature_columns:
+        scaler = preprocessing.MinMaxScaler()
+        df[column] = scaler.fit_transform(np.expand_dims(df[column].values, axis=1))
+        column_scaler[column] = scaler
+    # add the MinMaxScaler instances to the result returned
+    result["column_scaler"] = column_scaler
+    # add the target column (label) by shifting by `lookup_step`
+    df['future'] = df['adjclose'].shift(-lookup_step)
+    # last `lookup_step` columns contains NaN in future column
+    # get them before droping NaNs
+    last_sequence = np.array(df[feature_columns].tail(lookup_step))
+    # drop NaNs
+    df.dropna(inplace=True)
+    sequence_data = []
+    sequences = deque(maxlen=n_steps)
+    for entry, target in zip(df[feature_columns + ["date"]].values, df['future'].values):
+        sequences.append(entry)
+        if len(sequences) == n_steps:
+            sequence_data.append([np.array(sequences), target])
+    # get the last sequence by appending the last `n_step` sequence with `lookup_step` sequence
+    # for instance, if n_steps=50 and lookup_step=10, last_sequence should be of 60 (that is 50+10) length
+    # this last_sequence will be used to predict future stock prices that are not available in the dataset
+    last_sequence = list([s[:len(feature_columns)] for s in sequences]) + list(last_sequence)
+    last_sequence = np.array(last_sequence).astype(np.float32)
+    # add to result
+    result['last_sequence'] = last_sequence
+    # construct the X's and y's
+    X, y = [], []
+    for seq, target in sequence_data:
+        X.append(seq)
+        y.append(target)
+    # convert to numpy arrays
+    X = np.array(X)
+    y = np.array(y)
+    # split the dataset into training & testing sets by date (not randomly splitting)
+    train_samples = int((1 - test_size) * len(X))
+    result["X_train"] = X[:train_samples]
+    result["y_train"] = y[:train_samples]
+    result["X_test"]  = X[train_samples:]
+    result["y_test"]  = y[train_samples:]
+    if shuffle:
+        # shuffle the datasets for training (if shuffle parameter is set)
+        shuffle_in_unison(result["X_train"], result["y_train"])
+        shuffle_in_unison(result["X_test"], result["y_test"])
+    # get the list of test set dates
+    dates = result["X_test"][:, -1, -1]
+    # retrieve test features from the original dataframe
+    result["test_df"] = result["df"].loc[dates]
+    # remove dates from the training/testing sets & convert to float32
+    result["X_train"] = result["X_train"][:, :, :len(feature_columns)].astype(np.float32)
+    result["X_test"] = result["X_test"][:, :, :len(feature_columns)].astype(np.float32)
+    return result
 
 
 
@@ -163,24 +156,21 @@ def create_model(sequence_length, n_features, units, cell, n_layers, dropout, lo
     model.compile(loss=loss, metrics=["mean_absolute_error"], optimizer=optimizer)
     return model
 
+# load the data
+data = load_data(ticker, start_date, end_date, n_steps, shuffle, lookup_step, test_size, feature_columns)
+
 # date now
 date_now = time.strftime("%Y-%m-%d")
-### training parameters
-#ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
+
 # model name to save, making it as unique as possible based on parameters
 ## create these folders if they does not exist
 #if not os.path.isdir("results"):
 #    os.mkdir("results")
 #if not os.path.isdir("logs"):
 #    os.mkdir("logs")
-#if not os.path.isdir("data"):
-#    os.mkdir("data")
 
 model_name = f"{date_now}_{ticker}-{loss}-{optimizer}-{cell.__name__}-seq-{n_steps}-step-\
 {lookup_step}-layers-{n_layers}-units-{units}"
-
-# load the data
-data = result
 
 # construct the model
 model = create_model(n_steps, len(feature_columns), loss=loss, units=units, 
@@ -191,14 +181,14 @@ checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"),
 tensorboard = TensorBoard(log_dir=os.path.join("logs", model_name))
 # train the model and save the weights whenever we see 
 # a new optimal model using ModelCheckpoint
-history = model.fit(data["X_train"], data["y_train"],
-                    batch_size=batch_size,
-                    epochs=epochs,
-                    validation_data=(data["X_test"], data["y_test"]),
-                    callbacks=[checkpointer, tensorboard],
-                    verbose=1)
+model.fit(data["X_train"], data["y_train"], batch_size=batch_size, epochs=epochs, 
+    validation_data=(data["X_test"], data["y_test"]),
+    callbacks=[checkpointer, tensorboard],
+    verbose=1)
 
 # print(data)
+
+model.save('mymodel.h5')
 
 def get_final_df(model, data):
     """
@@ -206,12 +196,6 @@ def get_final_df(model, data):
     construct a final dataframe that includes the features along 
     with true and predicted prices of the testing dataset
     """
-    # if predicted future price is higher than the current, 
-    # then calculate the true future price minus the current price, to get the buy profit
-    buy_profit  = lambda current, true_future, pred_future: true_future - current if pred_future > current else 0
-    # if the predicted future price is lower than the current price,
-    # then subtract the true future price from the current price
-    sell_profit = lambda current, true_future, pred_future: current - true_future if pred_future < current else 0
     X_test = data["X_test"]
     y_test = data["y_test"]
     # perform prediction and get prices
@@ -226,33 +210,8 @@ def get_final_df(model, data):
     # sort the dataframe by date
     test_df.sort_index(inplace=True)
     final_df = test_df
-    # add the buy profit column
-    final_df["buy_profit"] = list(map(buy_profit, 
-                                    final_df["adjclose"], 
-                                    final_df[f"adjclose_{lookup_step}"], 
-                                    final_df[f"true_adjclose_{lookup_step}"])
-                                    # since we don't have profit for last sequence, add 0's
-                                    )
-    # add the sell profit column
-    final_df["sell_profit"] = list(map(sell_profit, 
-                                    final_df["adjclose"], 
-                                    final_df[f"adjclose_{lookup_step}"], 
-                                    final_df[f"true_adjclose_{lookup_step}"])
-                                    # since we don't have profit for last sequence, add 0's
-                                    )
     return final_df
 
-
-def predict(model, data):
-    # retrieve the last sequence from data
-    last_sequence = data["last_sequence"][-n_steps:]
-    # expand dimension
-    last_sequence = np.expand_dims(last_sequence, axis=0)
-    # get the prediction (scaled from 0 to 1)
-    prediction = model.predict(last_sequence)
-    # get the price (by inverting the scaling)
-    predicted_price = data["column_scaler"]["adjclose"].inverse_transform(prediction)[0][0]
-    return predicted_price
 
 # load optimal model weights from results folder
 model_path = os.path.join("results", model_name) + ".h5"
@@ -267,27 +226,11 @@ mean_absolute_error = data["column_scaler"]["adjclose"].inverse_transform([[mae]
 # get the final dataframe for the testing set
 final_df = get_final_df(model, data)
 
-# predict the future price
-future_price = predict(model, data)
-
-# we calculate the accuracy by counting the number of positive profits
-accuracy_score = (len(final_df[final_df['sell_profit'] > 0]) + len(final_df[final_df['buy_profit'] > 0])) / len(final_df)
-# calculating total buy & sell profit
-total_buy_profit  = final_df["buy_profit"].sum()
-total_sell_profit = final_df["sell_profit"].sum()
-# total profit by adding sell & buy together
-total_profit = total_buy_profit + total_sell_profit
-# dividing total profit by number of testing samples (number of trades)
-profit_per_trade = total_profit / len(final_df)
-
 
 # printing metrics
-#print(f"Future price after {LOOKUP_STEP} days is {future_price:.2f}$")
 #print(f"{LOSS} loss:", loss)
 #print("Mean Absolute Error:", mean_absolute_error)
 #print("Accuracy score:", accuracy_score)
-#print("Total buy profit:", total_buy_profit)
-#print("Total sell profit:", total_sell_profit)
 #print("Total profit:", total_profit)
 #print("Profit per trade:", profit_per_trade)
 
@@ -311,6 +254,6 @@ plot_graph(final_df)
 #csv_filename = os.path.join(csv_results_folder, model_name + ".csv")
 #final_df.to_csv(csv_filename)
 
-
+print(model.summary())
 
 
