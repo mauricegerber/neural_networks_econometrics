@@ -32,7 +32,7 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01/01/2019"
+start_date = "01/01/2015"
 end_date = "01/01/2020"
 # Days into the future (y)
 lookup_step = 1 
@@ -45,13 +45,13 @@ feature_columns=['adjclose', 'volume', 'open', 'high', 'low']
 # shuffle of training/test data
 shuffle = False
 # Layers 
-n_layers = 5
+n_layers = 2
 # A dropout on the input means that for a given probability, 
 # the data on the input connection to each LSTM block will be 
 # excluded from node activation and weight updates. 
 dropout = 0.4
 # Optimizer
-optimizer = "adam"
+optimizer = "RMSprop"
 # Loss
 loss = "huber_loss"
 # LSTM cell
@@ -62,6 +62,17 @@ units = 256
 batch_size = 64
 # Epochs
 epochs = 1
+
+# Possible Optimizers
+#class Adam: Optimizer that implements the Adam algorithm. OK
+#class Adamax: Optimizer that implements the Adamax algorithm. OK
+#class Nadam: Optimizer that implements the NAdam algorithm. OK
+#class RMSprop: Optimizer that implements the RMSprop algorithm. OK
+
+#class Adadelta: Optimizer that implements the Adadelta algorithm. NOT
+#class Adagrad: Optimizer that implements the Adagrad algorithm. NOT
+#class Ftrl: Optimizer that implements the FTRL algorithm. NOT
+#class SGD: Gradient descent (with momentum) optimizer. NOT
 
 def shuffle_in_unison(a, b):
     # shuffle two arrays in the same way
@@ -226,14 +237,7 @@ mean_absolute_error = data["column_scaler"]["adjclose"].inverse_transform([[mae]
 # get the final dataframe for the testing set
 final_df = get_final_df(model, data)
 
-
-# printing metrics
-#print(f"{LOSS} loss:", loss)
-#print("Mean Absolute Error:", mean_absolute_error)
-#print("Accuracy score:", accuracy_score)
-#print("Total profit:", total_profit)
-#print("Profit per trade:", profit_per_trade)
-
+print(model.evaluate(data["X_test"], data["y_test"], verbose=0))
 
 # plot true/pred prices graph
 def plot_graph(test_df):
@@ -244,8 +248,6 @@ def plot_graph(test_df):
     plt.legend(["Actual Price", "Predicted Price"])
     plt.show()
 
-plot_graph(final_df)
-
 #print(final_df.tail(10))
 # save the final dataframe to csv-results folder
 #csv_results_folder = "csv-results"
@@ -254,6 +256,29 @@ plot_graph(final_df)
 #csv_filename = os.path.join(csv_results_folder, model_name + ".csv")
 #final_df.to_csv(csv_filename)
 
-print(model.summary())
+#print(model.summary())
+print("Mean Absolute Error:", mean_absolute_error)
+#plot_graph(final_df)
+
+
+
+
+
+
+
+from sklearn.metrics import mean_absolute_error
+
+ab = mean_absolute_error(data["X_test"], data["y_test"])
+print(ab)
+
+
+
+
+
+
+
+
+
+
 
 
