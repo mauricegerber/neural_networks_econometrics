@@ -16,13 +16,14 @@ import random
 import matplotlib.pyplot as plt
 from tensorflow.keras.layers import LSTM
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_absolute_error
 
 # TEST FILE
 
 # set seed, so we can get the same results after rerunning several times
-np.random.seed(1)
-tf.random.set_seed(1)
-random.seed(1)
+#np.random.seed(1)
+#tf.random.set_seed(1)
+#random.seed(1)
 
 
 pd.set_option('display.max_columns', None)
@@ -37,7 +38,7 @@ end_date = "01/01/2020"
 # Days into the future (y)
 lookup_step = 1 
 # Days back (X), Window size or the sequence length
-n_steps = 10
+n_steps = 2
 # Test size
 test_size = 0.2
 # Feature column
@@ -228,16 +229,15 @@ def get_final_df(model, data):
 model_path = os.path.join("results", model_name) + ".h5"
 model.load_weights(model_path)
 
-
-# evaluate the model
-loss, mae = model.evaluate(data["X_test"], data["y_test"], verbose=0)
-# calculate the mean absolute error (inverse scaling)
-mean_absolute_error = data["column_scaler"]["adjclose"].inverse_transform([[mae]])[0][0]
-
 # get the final dataframe for the testing set
 final_df = get_final_df(model, data)
 
-print(model.evaluate(data["X_test"], data["y_test"], verbose=0))
+# calculate the mean absolute error (MAE)
+mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'], 
+    final_df[f'adjclose_{lookup_step}'])
+
+#ab_keras = tf.keras.losses.MAE(final_df[f'true_adjclose_{lookup_step}'], final_df[f'adjclose_{lookup_step}'])
+#print(ab_keras)
 
 # plot true/pred prices graph
 def plot_graph(test_df):
@@ -248,36 +248,11 @@ def plot_graph(test_df):
     plt.legend(["Actual Price", "Predicted Price"])
     plt.show()
 
-#print(final_df.tail(10))
-# save the final dataframe to csv-results folder
-#csv_results_folder = "csv-results"
-#if not os.path.isdir(csv_results_folder):
-#    os.mkdir(csv_results_folder)
-#csv_filename = os.path.join(csv_results_folder, model_name + ".csv")
-#final_df.to_csv(csv_filename)
 
-#print(model.summary())
-print("Mean Absolute Error:", mean_absolute_error)
-#plot_graph(final_df)
-
-
-
-
-
-
-
-from sklearn.metrics import mean_absolute_error
-
-ab = mean_absolute_error(data["X_test"], data["y_test"])
-print(ab)
-
-
-
-
-
-
-
-
+# print Output
+print(model.summary())
+print("Mean Absolute Error:", mae)
+plot_graph(final_df)
 
 
 
