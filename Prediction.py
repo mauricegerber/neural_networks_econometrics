@@ -17,25 +17,33 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.layers import LSTM
 from sklearn.preprocessing import MinMaxScaler
 
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
 
 newmodel = tf.keras.models.load_model('mymodel.h5')
 print(newmodel.summary())
 
-# load optimal model weights from results folder
+n_steps = 200
 
-a = np.array([[[0.99044895, 0.99312127, 0.936754,   0.9906605,  0.9535704 ], 
-    [0.9747412,  0.45829752, 0.9693597,  0.98753715, 0.9902297],
-    [1, 0.55030096, 1,         1, 1        ],
-    [0.9477063 , 0.32588133, 0.94320554, 0.94599146, 0.9579066 ],
-    [0.9477063 , 0.953501, 0.94320554, 0.94599146, 0.9637131 ],
-    [0.9477063 , 0.32588133, 0.20554, 0.4599146, 0.9579066 ],
-    [0.9477063 , 0.588133, 0.9637131, 0.9146, 0.9579066 ],
-    [0.9477063 , 0.8133, 0.94320554, 0.94599146, 0.9579066 ],
-    [0.93711364, 0.27171108, 0.9374369,  0.9394641,  0.9550716 ],
-    [0.96865135, 0.34651762, 0.9316004,  0.9637131,  0.953501  ]]])
+df = si.get_data('^N225', '01.01.2018', '29.04.2021')
+df = df[['adjclose', 'volume', 'open', 'high', 'low']]
+df = df[-n_steps:]
+print(df)
 
-y_pred = newmodel.predict(a)
+column_scaler = {}
+for column in df.columns.values:
+    scaler = preprocessing.MinMaxScaler()
+    df[column] = scaler.fit_transform(np.expand_dims(df[column].values, axis=1))
+    column_scaler[column] = scaler
+
+
+df = np.array([df])
+
+y_pred = newmodel.predict(df)
+y_pred = np.squeeze(column_scaler["adjclose"].inverse_transform(y_pred))
 
 print(y_pred)
+#print(column_scaler)
 
-
+# Wed. 5th = 28921.031
+# Wed. 5th = 27989.307

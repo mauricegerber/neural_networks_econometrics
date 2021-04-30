@@ -33,12 +33,12 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01/01/2015"
+start_date = "01/01/2010"
 end_date = "01/01/2020"
 # Days into the future (y)
-lookup_step = 1 
+lookup_step = 5 
 # Days back (X), Window size or the sequence length
-n_steps = 2
+n_steps = 200
 # Test size
 test_size = 0.2
 # Feature column
@@ -62,7 +62,7 @@ units = 256
 # Batch size
 batch_size = 64
 # Epochs
-epochs = 1
+epochs = 10
 
 # Possible Optimizers
 #class Adam: Optimizer that implements the Adam algorithm. OK
@@ -221,8 +221,7 @@ def get_final_df(model, data):
     test_df[f"true_adjclose_{lookup_step}"] = y_test
     # sort the dataframe by date
     test_df.sort_index(inplace=True)
-    final_df = test_df
-    return final_df
+    return test_df
 
 
 # load optimal model weights from results folder
@@ -241,8 +240,9 @@ mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'],
 
 # plot true/pred prices graph
 def plot_graph(test_df):
-    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='green')
-    plt.plot(test_df[f'adjclose_{lookup_step}'], c='orange')
+ #   plt.plot(test_df['adjclose'], c='green')
+    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='red')
+    plt.plot(test_df[f'adjclose_{lookup_step}'], c='blue')
     plt.xlabel("Days")
     plt.ylabel("Price")
     plt.legend(["Actual Price", "Predicted Price"])
@@ -251,9 +251,6 @@ def plot_graph(test_df):
 
 # print Output
 print(model.summary())
-print("Mean Absolute Error:", mae)
+#print("Mean Absolute Error:", mae)
 plot_graph(final_df)
-
-
-
 
