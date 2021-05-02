@@ -33,12 +33,12 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01/01/2010"
+start_date = "01/01/2019"
 end_date = "01/01/2020"
 # Days into the future (y)
-lookup_step = 5 
+lookup_step = 3 
 # Days back (X), Window size or the sequence length
-n_steps = 200
+n_steps = 20
 # Test size
 test_size = 0.2
 # Feature column
@@ -62,7 +62,7 @@ units = 256
 # Batch size
 batch_size = 64
 # Epochs
-epochs = 10
+epochs = 1
 
 # Possible Optimizers
 #class Adam: Optimizer that implements the Adam algorithm. OK
@@ -200,7 +200,7 @@ model.fit(data["X_train"], data["y_train"], batch_size=batch_size, epochs=epochs
 
 # print(data)
 
-model.save('mymodel.h5')
+model.save('prediction.h5')
 
 def get_final_df(model, data):
     """
@@ -234,23 +234,22 @@ final_df = get_final_df(model, data)
 # calculate the mean absolute error (MAE)
 mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'], 
     final_df[f'adjclose_{lookup_step}'])
-
-#ab_keras = tf.keras.losses.MAE(final_df[f'true_adjclose_{lookup_step}'], final_df[f'adjclose_{lookup_step}'])
-#print(ab_keras)
+mae = round(mae,1)
 
 # plot true/pred prices graph
 def plot_graph(test_df):
- #   plt.plot(test_df['adjclose'], c='green')
-    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='red')
-    plt.plot(test_df[f'adjclose_{lookup_step}'], c='blue')
-    plt.xlabel("Days")
-    plt.ylabel("Price")
-    plt.legend(["Actual Price", "Predicted Price"])
+    plt.figure(figsize=(15, 8))
+    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='dodgerblue')
+    plt.plot(test_df[f'adjclose_{lookup_step}'], c='firebrick')
+    plt.xlabel("Date")
+    plt.ylabel("Adjusted closing price in JPY")
+    plt.legend(["Actual Price", f"Predicted Price [{mae}]"], loc = 8, 
+        frameon = False, ncol = 2)
     plt.show()
 
 
 # print Output
 print(model.summary())
-#print("Mean Absolute Error:", mae)
+print("Mean Absolute Error:", mae)
 plot_graph(final_df)
 
