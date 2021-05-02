@@ -25,4 +25,4 @@ plt.legend(["Nikkei 225 Index [N225]"], loc = 8, frameon = False)
 plt.show()
 
 
-plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_price_data.jpg'))  
+plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_price_data.png'))  
