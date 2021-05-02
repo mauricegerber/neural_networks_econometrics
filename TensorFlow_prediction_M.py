@@ -33,12 +33,12 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01.01.2018"
+start_date = "01.01.2010"
 end_date = "01.01.2020"
 # Days into the future (y)
-lookup_step = 1 
+lookup_step = 5 
 # Days back (X), Window size or the sequence length
-n_steps = 5
+n_steps = 20
 # Test size
 test_size = 0.2
 # Feature column
