@@ -36,9 +36,9 @@ ticker = "^N225"
 start_date = "01.01.2010"
 end_date = "01.01.2020"
 # Days into the future (y)
-lookup_step = 5 
+lookup_step = 15 
 # Days back (X), Window size or the sequence length
-n_steps = 20
+n_steps = 150
 # Test size
 test_size = 0.2
 # Feature column
@@ -52,7 +52,7 @@ n_layers = 2
 # excluded from node activation and weight updates. 
 dropout = 0.4
 # Optimizer
-optimizer = "RMSprop"
+optimizer = "Adam"
 # Loss
 loss = "huber_loss"
 # LSTM cell
@@ -252,18 +252,17 @@ def plot_graph(test_df):
     plt.ylabel("Adjusted closing price in JPY")
     plt.legend(["Actual", f"Predicted [MAE:{mae}]"], loc = 9, 
         frameon = False, ncol = 2)
-    plt.show()
     # save the plot
-#    plt.savefig(os.path.join('plots', 
-#        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
-#    plt.close()
+    plt.savefig(os.path.join('plots', 
+        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
+    plt.close()
 
 
 ## print Output
 #print(model.summary())
 #print("Mean Absolute Error:", mae)
 print(final_df)
-#plot_graph(final_df)
+plot_graph(final_df)
 
 
 

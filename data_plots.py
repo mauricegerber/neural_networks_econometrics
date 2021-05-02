@@ -55,13 +55,14 @@ end_plot = df.index[-1]
 
 
 
-## Plot different optimizer graphs
+# load different optimizer
 adam = pd.read_csv('optimizer/^N225_Adam.csv')
 adamax = pd.read_csv('optimizer/^N225_Adamax.csv')
 nadam = pd.read_csv('optimizer/^N225_Nadam.csv')
 RMSprop = pd.read_csv('optimizer/^N225_RMSprop.csv')
 SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 
+## Plot different optimizer graphs
 plt.figure(figsize = fig_size)
 plt.plot(adam['adjclose_5'], c='olivedrab', linewidth = 0.9)
 plt.plot(adamax['adjclose_5'], c='gold', linewidth = 0.9)
@@ -70,12 +71,11 @@ plt.plot(RMSprop['adjclose_5'], c='brown', linewidth = 0.9)
 plt.plot(SGD['adjclose_5'], c='crimson', linewidth = 0.9)
 plt.ylabel("Adjusted closing price in JPY")
 plt.xlabel("Time steps for test set")
-plt.legend(['Adam','Adamax','Nadam','RMSprop','SGD'], 
-	loc = 9, frameon = False, ncol = 5)
+plt.legend(['Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 5)
 plt.show()
 
 #plt.savefig(os.path.join('plots', f'{ticker}_different_optimizer.png'), dpi = 600)  
-plt.close()
+#plt.close()
 
 
 

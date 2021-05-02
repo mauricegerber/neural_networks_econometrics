@@ -23,9 +23,9 @@ newmodel = tf.keras.models.load_model('prediction.h5')
 #print(newmodel.summary())
 
 # Days into the future (y), same as used to train the model
-lookup_step = 30 
+lookup_step = 15 
 # same n_staps as used to train the model
-n_steps = 200
+n_steps = 150
 
 
 start_date = '01.01.2010'
@@ -92,11 +92,11 @@ plt.ylabel("Adjusted closing price in JPY")
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
 plt.legend(['Actual', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2)
 
-plt.show()
+#plt.show()
 
 # save plot
-#plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = 600)  
-#plt.close()
+plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = 600)  
+plt.close()
 
 
 
