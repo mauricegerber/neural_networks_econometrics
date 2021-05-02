@@ -23,14 +23,17 @@ newmodel = tf.keras.models.load_model('prediction.h5')
 #print(newmodel.summary())
 
 # same n_staps as used to train the model
-n_steps = 200
+n_steps = 60
 # Days into the future (y), same as used to train the model
-lookup_step = 30 
+lookup_step = 3 
 
 start_date = '01.01.2018'
 end_date = '29.04.2021'
+ticker = '^N225'
 
-df = si.get_data('^N225', start_date, end_date)
+fig_size = (15,8)
+
+df = si.get_data(ticker, start_date, end_date)
 df = df[['adjclose', 'volume', 'open', 'high', 'low']]
 df = df[-n_steps:]
 index_data = df['adjclose'].copy()
@@ -61,18 +64,39 @@ print(index_data)
 # Wed. 5th = 28921.031
 # Wed. 5th = 27989.307
 
-#x_pred_date = pd.to_datetime(end_date) + datetime.timedelta(days = lookup_step)
-#date_plot = pd.to_datetime(end_date) + datetime.timedelta(days = (lookup_step + 10))
+def business_days(from_date, add_days):
+    business_days_to_add = add_days
+    current_date = from_date
+    while business_days_to_add > 0:
+        current_date += datetime.timedelta(days=1)
+        weekday = current_date.weekday()
+        if weekday >= 5: # sunday = 6
+            continue
+        business_days_to_add -= 1
+    return current_date
 
-plt.figure(figsize=(15, 8))
-plt.xlim(index_data['date'][0], index_data['index'][n_steps-1] + lookup_step)
-plt.plot(index_data['date'], index_data['adjclose'])
-#plt.scatter(x = x_pred_date, y = y_pred, c = 'red')
+#print(business_days(index_data['date'][n_steps-1], lookup_step))
+# x value for prediction point
+x_pred_date = business_days(index_data['date'][n_steps-1], lookup_step)
+
+# Plot date range
+start_plot = index_data['date'][0]
+end_plot = x_pred_date
+
+# Plot prediction
+plt.figure(figsize = fig_size)
+plt.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
+plt.scatter(x = x_pred_date, y = y_pred, c = 'red')
+plt.ylabel("Adjusted closing price in JPY")
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
+plt.legend(['Actual', f'Predicted price: {y_pred}'], loc = 9, frameon = False, ncol = 2)
+
 plt.show()
 
+# save plot
+#plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = 600)  
+#plt.close()
 
-#print(index_data['index'][n_steps-1] + lookup_step)
-#plt.xlim(index_data['date'][0], index_data['index'][n_steps-1] + lookup_step)
 
 
 

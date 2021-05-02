@@ -33,12 +33,12 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01/01/2019"
-end_date = "01/01/2020"
+start_date = "01.01.2019"
+end_date = "01.01.2020"
 # Days into the future (y)
 lookup_step = 3 
 # Days back (X), Window size or the sequence length
-n_steps = 20
+n_steps = 60
 # Test size
 test_size = 0.2
 # Feature column
@@ -215,7 +215,7 @@ def get_final_df(model, data):
     y_test = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(np.expand_dims(y_test, axis=0)))
     y_pred = np.squeeze(data["column_scaler"]["adjclose"].inverse_transform(y_pred))
     test_df = data["test_df"]
-        # add predicted future prices to the dataframe
+    # add predicted future prices to the dataframe
     test_df[f"adjclose_{lookup_step}"] = y_pred
     # add true future prices to the dataframe
     test_df[f"true_adjclose_{lookup_step}"] = y_test
@@ -236,20 +236,38 @@ mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'],
     final_df[f'adjclose_{lookup_step}'])
 mae = round(mae,1)
 
+# start and end date from test data set used for plot
+start_plot = final_df.index[0]
+end_plot = final_df.index[-1]
+
 # plot true/pred prices graph
 def plot_graph(test_df):
     plt.figure(figsize=(15, 8))
-    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='dodgerblue')
+    plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='steelblue')
     plt.plot(test_df[f'adjclose_{lookup_step}'], c='firebrick')
-    plt.xlabel("Date")
+    plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
     plt.ylabel("Adjusted closing price in JPY")
-    plt.legend(["Actual Price", f"Predicted Price [{mae}]"], loc = 8, 
+    plt.legend(["Actual", f"Predicted [{mae}], epochs:{epochs} "], loc = 9, 
         frameon = False, ncol = 2)
     plt.show()
+    # save the plot
+    plt.savefig(os.path.join('plots', 
+        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
+    plt.close()
 
 
-# print Output
-print(model.summary())
-print("Mean Absolute Error:", mae)
+## print Output
+#print(model.summary())
+#print("Mean Absolute Error:", mae)
+print(final_df)
 plot_graph(final_df)
+print(final_df)
+
+
+
+
+
+
+
+
 
