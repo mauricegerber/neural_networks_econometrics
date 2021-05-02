@@ -22,12 +22,13 @@ pd.set_option('display.max_rows', None)
 newmodel = tf.keras.models.load_model('prediction.h5')
 #print(newmodel.summary())
 
-# same n_staps as used to train the model
-n_steps = 60
 # Days into the future (y), same as used to train the model
-lookup_step = 3 
+lookup_step = 30 
+# same n_staps as used to train the model
+n_steps = 200
 
-start_date = '01.01.2018'
+
+start_date = '01.01.2010'
 end_date = '29.04.2021'
 ticker = '^N225'
 
@@ -38,8 +39,6 @@ df = df[['adjclose', 'volume', 'open', 'high', 'low']]
 df = df[-n_steps:]
 index_data = df['adjclose'].copy()
 
-#adjclose["date"] = adjclose.index
-#adjclose.reset_index(inplace=True)
 
 column_scaler = {}
 for column in df.columns.values:
@@ -50,9 +49,10 @@ for column in df.columns.values:
 
 df = np.array([df])
 
+# prediction function
 y_pred = newmodel.predict(df)
 y_pred = np.squeeze(column_scaler["adjclose"].inverse_transform(y_pred))
-
+y_pred = y_pred.astype(int)
 print(y_pred)
 
 index_data = index_data.reset_index()
@@ -64,6 +64,7 @@ print(index_data)
 # Wed. 5th = 28921.031
 # Wed. 5th = 27989.307
 
+# Business day function to calculate the date in the future
 def business_days(from_date, add_days):
     business_days_to_add = add_days
     current_date = from_date
@@ -75,9 +76,9 @@ def business_days(from_date, add_days):
         business_days_to_add -= 1
     return current_date
 
-#print(business_days(index_data['date'][n_steps-1], lookup_step))
-# x value for prediction point
+# x value for y_pred 
 x_pred_date = business_days(index_data['date'][n_steps-1], lookup_step)
+#print(x_pred_date)
 
 # Plot date range
 start_plot = index_data['date'][0]
@@ -86,10 +87,10 @@ end_plot = x_pred_date
 # Plot prediction
 plt.figure(figsize = fig_size)
 plt.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
-plt.scatter(x = x_pred_date, y = y_pred, c = 'red')
+plt.scatter(x = x_pred_date, y = y_pred, c = 'orangered')
 plt.ylabel("Adjusted closing price in JPY")
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
-plt.legend(['Actual', f'Predicted price: {y_pred}'], loc = 9, frameon = False, ncol = 2)
+plt.legend(['Actual', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2)
 
 plt.show()
 

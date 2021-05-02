@@ -33,12 +33,12 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01.01.2019"
+start_date = "01.01.2005"
 end_date = "01.01.2020"
 # Days into the future (y)
-lookup_step = 3 
+lookup_step = 4 
 # Days back (X), Window size or the sequence length
-n_steps = 60
+n_steps = 40
 # Test size
 test_size = 0.2
 # Feature column
@@ -203,11 +203,6 @@ model.fit(data["X_train"], data["y_train"], batch_size=batch_size, epochs=epochs
 model.save('prediction.h5')
 
 def get_final_df(model, data):
-    """
-    This function takes the `model` and `data` dict to 
-    construct a final dataframe that includes the features along 
-    with true and predicted prices of the testing dataset
-    """
     X_test = data["X_test"]
     y_test = data["y_test"]
     # perform prediction and get prices
@@ -244,16 +239,17 @@ end_plot = final_df.index[-1]
 def plot_graph(test_df):
     plt.figure(figsize=(15, 8))
     plt.plot(test_df[f'true_adjclose_{lookup_step}'], c='steelblue')
+#    plt.plot(test_df[f'adjclose'], c='yellow')
     plt.plot(test_df[f'adjclose_{lookup_step}'], c='firebrick')
     plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
     plt.ylabel("Adjusted closing price in JPY")
-    plt.legend(["Actual", f"Predicted [{mae}], epochs:{epochs} "], loc = 9, 
+    plt.legend(["Actual", f"Predicted [MAE:{mae}]"], loc = 9, 
         frameon = False, ncol = 2)
     plt.show()
     # save the plot
-    plt.savefig(os.path.join('plots', 
-        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
-    plt.close()
+#    plt.savefig(os.path.join('plots', 
+#        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
+#    plt.close()
 
 
 ## print Output
@@ -261,7 +257,6 @@ def plot_graph(test_df):
 #print("Mean Absolute Error:", mae)
 print(final_df)
 plot_graph(final_df)
-print(final_df)
 
 
 
