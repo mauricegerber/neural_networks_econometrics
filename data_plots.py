@@ -4,6 +4,7 @@ from matplotlib import pyplot
 import pandas as pd
 import numpy as np
 import os
+import pathlib
 
 #os.mkdir("plots")
 
@@ -30,7 +31,7 @@ plt.plot(df, c='steelblue', linewidth = 0.9)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
 plt.ylabel("Adjusted closing price in JPY")
 plt.legend(["Nikkei 225 Index [^N225]"], loc = 9, frameon = False)
-plt.show() # for saving plot, dont show it
+#plt.show() # for saving plot, dont show it
 
 #plt.savefig(os.path.join('plots', 
 #	f'{ticker}_{start_date}_{end_date}_price_data.png'), dpi = 600)  
@@ -39,15 +40,40 @@ plt.show() # for saving plot, dont show it
 
 ## Plot daily returns graph
 daily_returns = df.pct_change()
+
 plt.figure(figsize = fig_size)
 plt.ylabel("Daily returns in %")
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
 plt.plot(daily_returns, c='steelblue', linewidth = 0.9)
-plt.show() # for saving plot, dont show it
+#plt.show() # for saving plot, dont show it
 
 #plt.savefig(os.path.join('plots', 
 #	f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = 600)  
 #plt.close()
+
+
+
+
+
+## Plot different optimizer graphs
+adam = pd.read_csv('../optimizer/^N225_Adam.csv')
+#adam = os.path.join(optimizer, '^N225_Adam.txt')
+#RMSprop = os.path.join(optimizer, '^N225_RMSprop.txt')
+
+#plt.figure(figsize = fig_size)
+#plt.plot(df, c='steelblue', linewidth = 0.9)
+#plt.plot(df, c='steelblue', linewidth = 0.9)
+#plt.show()
+
+
+
+
+
+
+
+
+
+
 
 
 

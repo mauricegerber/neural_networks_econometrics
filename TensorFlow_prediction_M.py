@@ -33,12 +33,12 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01.01.2005"
+start_date = "01.01.2018"
 end_date = "01.01.2020"
 # Days into the future (y)
-lookup_step = 4 
+lookup_step = 1 
 # Days back (X), Window size or the sequence length
-n_steps = 40
+n_steps = 5
 # Test size
 test_size = 0.2
 # Feature column
@@ -74,6 +74,8 @@ epochs = 1
 #class Adagrad: Optimizer that implements the Adagrad algorithm. NOT
 #class Ftrl: Optimizer that implements the FTRL algorithm. NOT
 #class SGD: Gradient descent (with momentum) optimizer. NOT
+
+#os.mkdir("optimizer")
 
 def shuffle_in_unison(a, b):
     # shuffle two arrays in the same way
@@ -226,6 +228,11 @@ model.load_weights(model_path)
 # get the final dataframe for the testing set
 final_df = get_final_df(model, data)
 
+
+# save predicted price with different optimixations for later display
+different_optim = final_df[f'adjclose_{lookup_step}'].copy()
+different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
+
 # calculate the mean absolute error (MAE)
 mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'], 
     final_df[f'adjclose_{lookup_step}'])
@@ -256,7 +263,7 @@ def plot_graph(test_df):
 #print(model.summary())
 #print("Mean Absolute Error:", mae)
 print(final_df)
-plot_graph(final_df)
+#plot_graph(final_df)
 
 
 
