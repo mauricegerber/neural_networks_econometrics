@@ -16,6 +16,7 @@ end_date = '01.01.2021'
 ticker = '^N225'
 
 fig_size = (15,8)
+size = 14 # text size
 
 df = si.get_data(ticker, start_date, end_date)
 df = df['adjclose']
@@ -26,23 +27,23 @@ start_plot = df.index[0]
 end_plot = df.index[-1]
 
 ## Plot price graph
-#plt.figure(figsize = fig_size)
-#plt.plot(df, c='steelblue', linewidth = 0.9)
-#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
-#plt.ylabel("Adjusted closing price in JPY")
-#plt.legend(["Nikkei 225 Index [^N225]"], loc = 9, frameon = False)
+plt.figure(figsize = fig_size)
+plt.plot(df, c='steelblue', linewidth = 0.9)
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size)
+plt.ylabel("Adjusted closing price in JPY", fontsize = size)
+plt.legend(["Nikkei 225 Index [^N225]"], loc = 9, frameon = False, fontsize = size)
 #plt.show() # for saving plot, dont show it
 
-#plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_price_data.png'), dpi = 600)  
-#plt.close()
+plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_price_data.png'), dpi = 600)  
+plt.close()
 
 
 ## Plot daily returns graph
 daily_returns = df.pct_change()
 
 #plt.figure(figsize = fig_size)
-#plt.ylabel("Daily returns in %")
-#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
+#plt.ylabel("Daily returns in %", fontsize = size)
+#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size)
 #plt.plot(daily_returns, c='steelblue', linewidth = 0.9)
 #plt.show() # for saving plot, dont show it
 
