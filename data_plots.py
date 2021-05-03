@@ -11,7 +11,7 @@ import pathlib
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-start_date = '01.01.2000'
+start_date = '01.01.1995'
 end_date = '01.01.2021'
 ticker = '^N225'
 
@@ -33,23 +33,21 @@ end_plot = df.index[-1]
 #plt.legend(["Nikkei 225 Index [^N225]"], loc = 9, frameon = False)
 #plt.show() # for saving plot, dont show it
 
-#plt.savefig(os.path.join('plots', 
-#	f'{ticker}_{start_date}_{end_date}_price_data.png'), dpi = 600)  
+#plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_price_data.png'), dpi = 600)  
 #plt.close()
 
 
 ## Plot daily returns graph
-#daily_returns = df.pct_change()
+daily_returns = df.pct_change()
 
-#plt.figure(figsize = fig_size)
-#plt.ylabel("Daily returns in %")
-#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
-#plt.plot(daily_returns, c='steelblue', linewidth = 0.9)
+plt.figure(figsize = fig_size)
+plt.ylabel("Daily returns in %")
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
+plt.plot(daily_returns, c='steelblue', linewidth = 0.9)
 #plt.show() # for saving plot, dont show it
 
-#plt.savefig(os.path.join('plots', 
-#	f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = 600)  
-#plt.close()
+plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = 600)  
+plt.close()
 
 
 
@@ -63,16 +61,16 @@ RMSprop = pd.read_csv('optimizer/^N225_RMSprop.csv')
 SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 
 ## Plot different optimizer graphs
-plt.figure(figsize = fig_size)
-plt.plot(adam['adjclose_5'], c='olivedrab', linewidth = 0.9)
-plt.plot(adamax['adjclose_5'], c='gold', linewidth = 0.9)
-plt.plot(nadam['adjclose_5'], c='deepskyblue', linewidth = 0.9)
-plt.plot(RMSprop['adjclose_5'], c='brown', linewidth = 0.9)
-plt.plot(SGD['adjclose_5'], c='crimson', linewidth = 0.9)
-plt.ylabel("Adjusted closing price in JPY")
-plt.xlabel("Time steps for test set")
-plt.legend(['Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 5)
-plt.show()
+#plt.figure(figsize = fig_size)
+#plt.plot(adam['adjclose_5'], c='olivedrab', linewidth = 0.9)
+#plt.plot(adamax['adjclose_5'], c='gold', linewidth = 0.9)
+#plt.plot(nadam['adjclose_5'], c='deepskyblue', linewidth = 0.9)
+#plt.plot(RMSprop['adjclose_5'], c='brown', linewidth = 0.9)
+#plt.plot(SGD['adjclose_5'], c='crimson', linewidth = 0.9)
+#plt.ylabel("Adjusted closing price in JPY")
+#plt.xlabel("Time steps for test set")
+#plt.legend(['Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 5)
+#plt.show()
 
 #plt.savefig(os.path.join('plots', f'{ticker}_different_optimizer.png'), dpi = 600)  
 #plt.close()
