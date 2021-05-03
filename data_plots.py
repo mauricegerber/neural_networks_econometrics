@@ -40,14 +40,14 @@ end_plot = df.index[-1]
 ## Plot daily returns graph
 daily_returns = df.pct_change()
 
-plt.figure(figsize = fig_size)
-plt.ylabel("Daily returns in %")
-plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
-plt.plot(daily_returns, c='steelblue', linewidth = 0.9)
+#plt.figure(figsize = fig_size)
+#plt.ylabel("Daily returns in %")
+#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
+#plt.plot(daily_returns, c='steelblue', linewidth = 0.9)
 #plt.show() # for saving plot, dont show it
 
-plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = 600)  
-plt.close()
+#plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = 600)  
+#plt.close()
 
 
 
