@@ -29,7 +29,7 @@ n_steps = 150
 
 
 start_date = '01.01.2010'
-end_date = '29.04.2021'
+end_date = '30.04.2021'
 ticker = '^N225'
 
 fig_size = (15,8)
