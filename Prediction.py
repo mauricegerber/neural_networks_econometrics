@@ -6,6 +6,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from yahoo_fin import stock_info as si
 from tensorflow import keras
+from matplotlib import rcParams
 
 import os
 import datetime
@@ -23,9 +24,9 @@ newmodel = tf.keras.models.load_model('prediction.h5')
 #print(newmodel.summary())
 
 # Days into the future (y), same as used to train the model
-lookup_step = 15 
+lookup_step = 5 
 # same n_staps as used to train the model
-n_steps = 150
+n_steps = 15
 
 
 start_date = '01.01.2010'
@@ -84,19 +85,29 @@ x_pred_date = business_days(index_data['date'][n_steps-1], lookup_step)
 start_plot = index_data['date'][0]
 end_plot = x_pred_date
 
-# Plot prediction
-plt.figure(figsize = fig_size)
-plt.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
-plt.scatter(x = x_pred_date, y = y_pred, c = 'orangered')
-plt.ylabel("Adjusted closing price in JPY")
-plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}")
-plt.legend(['Actual', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2)
+fig_size = (15,8)
+size = 18 # text size
+dpi = 500
+rcParams['font.family'] = 'serif'
+rcParams['font.serif'] = ['Times']
 
-#plt.show()
+
+# Plot prediction
+fig, ax = plt.subplots(figsize = fig_size)
+for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+   label.set_fontsize(size)
+
+ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
+ax.scatter(x = x_pred_date, y = y_pred, c = 'orangered')
+plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4)
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4)
+plt.legend(['Actual', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2, fontsize = size)
+
+plt.show()
 
 # save plot
-plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = 600)  
-plt.close()
+#plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = dpi)  
+#plt.close()
 
 
 

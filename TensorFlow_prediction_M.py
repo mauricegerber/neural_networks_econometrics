@@ -20,7 +20,6 @@ from sklearn.metrics import mean_absolute_error
 
 # TEST FILE
 
-# set seed, so we can get the same results after rerunning several times
 #np.random.seed(1)
 #tf.random.set_seed(1)
 #random.seed(1)
@@ -36,9 +35,9 @@ ticker = "^N225"
 start_date = "01.01.2010"
 end_date = "01.01.2020"
 # Days into the future (y)
-lookup_step = 15 
+lookup_step = 5 
 # Days back (X), Window size or the sequence length
-n_steps = 150
+n_steps = 15
 # Test size
 test_size = 0.2
 # Feature column
@@ -52,7 +51,7 @@ n_layers = 2
 # excluded from node activation and weight updates. 
 dropout = 0.4
 # Optimizer
-optimizer = "Adam"
+optimizer = "RMSprop"
 # Loss
 loss = "huber_loss"
 # LSTM cell
@@ -200,7 +199,6 @@ model.fit(data["X_train"], data["y_train"], batch_size=batch_size, epochs=epochs
     callbacks=[checkpointer, tensorboard],
     verbose=1)
 
-# print(data)
 
 model.save('prediction.h5')
 
@@ -238,6 +236,19 @@ mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'],
     final_df[f'adjclose_{lookup_step}'])
 mae = round(mae,1)
 
+# calculate the annualized Sharpe ratio
+# daily returns original data and predicted data
+daily_return_orig = final_df['adjclose'].pct_change()
+sharpe_ratio_orig = daily_return_orig.mean() / daily_return_orig.std()
+sharpe_ratio_orig = sharpe_ratio_orig * (252**0.5)
+#print(sharpe_ratio_orig)
+
+daily_return_pred = final_df[f'adjclose_{lookup_step}'].pct_change()
+sharpe_ratio_pred = daily_return_pred.mean() / daily_return_pred.std()
+sharpe_ratio_pred = sharpe_ratio_pred * (252**0.5)
+#print(sharpe_ratio_pred)
+
+
 # start and end date from test data set used for plot
 start_plot = final_df.index[0]
 end_plot = final_df.index[-1]
@@ -253,22 +264,23 @@ def plot_graph(test_df):
     plt.legend(["Actual", f"Predicted [MAE:{mae}]"], loc = 9, 
         frameon = False, ncol = 2)
     # save the plot
-    plt.savefig(os.path.join('plots', 
-        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
-    plt.close()
+#    plt.savefig(os.path.join('plots', 
+#        f'{ticker}_{start_date}_{end_date}_layers:{n_layers}_ls:{lookup_step}_ns:{n_steps}_ep:{epochs}_batch:{batch_size}_units:{units}.png'), dpi = 600)  
+#    plt.close()
+    plt.show()
 
 
 ## print Output
 #print(model.summary())
 #print("Mean Absolute Error:", mae)
+#plot_graph(final_df)
 print(final_df)
-plot_graph(final_df)
 
 
 
 
-
-
+# 2019-10-21
+# 2019-12-27
 
 
 
