@@ -53,8 +53,8 @@ daily_returns = df.pct_change()
 #	label.set_fontsize(size)
 
 #ax.plot(daily_returns, c='steelblue', linewidth = 0.9)
-#plt.ylabel("Daily returns in %", fontsize = size + 4)
-#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4)
+#plt.ylabel("Daily returns in %", fontsize = size + 4, labelpad = 20)
+#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
 #plt.show() # for saving plot, dont show it
 
 #plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = dpi)  
@@ -82,8 +82,8 @@ SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 #ax.plot(nadam['adjclose_5'], c='deepskyblue', linewidth = 0.9)
 #ax.plot(RMSprop['adjclose_5'], c='brown', linewidth = 0.9)
 #ax.plot(SGD['adjclose_5'], c='crimson', linewidth = 0.9)
-#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4)
-#plt.xlabel("Time steps for test set", fontsize = size + 4)
+#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+#plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
 #plt.legend(['Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 5, fontsize = size)
 #plt.show()
 

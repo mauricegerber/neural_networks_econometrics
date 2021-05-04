@@ -99,8 +99,8 @@ for label in (ax.get_xticklabels() + ax.get_yticklabels()):
 
 ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
 ax.scatter(x = x_pred_date, y = y_pred, c = 'orangered')
-plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4)
-plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4)
+plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
 plt.legend(['Actual', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2, fontsize = size)
 
 plt.show()
