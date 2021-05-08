@@ -49,7 +49,7 @@ n_layers = 2
 # dropout
 dropout = 0.3
 # Optimizer
-optimizer = "Adamax"
+optimizer = "RMSprop"
 # Loss
 loss = "huber_loss"
 # LSTM cell
@@ -57,7 +57,7 @@ cell = LSTM
 # LSTM neurons
 units = 256
 # Batch size
-batch_size = 100
+batch_size = 80
 # Epochs
 epochs = 1
 
@@ -248,13 +248,13 @@ sharpe_ratio_pred = sharpe_ratio_pred * (252**0.5)
 #different_input.to_csv(os.path.join('inputs', f'{ticker}_{n_steps}_{sharpe_ratio_pred}.csv'))
 
 ### batch size
-different_input = final_df[f'adjclose_{lookup_step}'].copy()
-different_input.to_csv(os.path.join('inputs', f'batch_size_{batch_size}_{sharpe_ratio_pred}.csv'))
+#different_input = final_df[f'adjclose_{lookup_step}'].copy()
+#different_input.to_csv(os.path.join('inputs', f'batch_size_{batch_size}_{sharpe_ratio_pred}.csv'))
 
 
 # save predicted price with different optimizations for later display
-#different_optim = final_df[f'adjclose_{lookup_step}'].copy()
-#different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
+different_optim = final_df[f'adjclose_{lookup_step}'].copy()
+different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
 
 
 # start and end date from test data set used for plot

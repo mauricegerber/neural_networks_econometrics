@@ -78,22 +78,23 @@ SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 
 ## Plot different optimizer graphs
 
-#fig, ax = plt.subplots(figsize = fig_size)
-#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-#	label.set_fontsize(size)
+fig, ax = plt.subplots(figsize = fig_size)
+for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+	label.set_fontsize(size)
 
-#ax.plot(adam['adjclose_5'], c='olivedrab', linewidth = 0.9)
-#ax.plot(adamax['adjclose_5'], c='gold', linewidth = 0.9)
-#ax.plot(nadam['adjclose_5'], c='deepskyblue', linewidth = 0.9)
-#ax.plot(RMSprop['adjclose_5'], c='brown', linewidth = 0.9)
-#ax.plot(SGD['adjclose_5'], c='crimson', linewidth = 0.9)
-#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
-#plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
-#plt.legend(['Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 5, fontsize = size)
+ax.plot(orig_price['adjclose'], c='steelblue', linewidth = 0.9)
+ax.plot(adam['adjclose_1'], c='crimson', linewidth = 0.9)
+ax.plot(adamax['adjclose_1'], c='gold', linewidth = 0.9)
+ax.plot(nadam['adjclose_1'], c='olive', linewidth = 0.9)
+ax.plot(RMSprop['adjclose_1'], c='brown', linewidth = 0.9)
+ax.plot(SGD['adjclose_1'], c='deepskyblue', linewidth = 0.9)
+plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
+plt.legend(['^N225','Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 6, fontsize = size)
 #plt.show()
 
-#plt.savefig(os.path.join('plots', f'{ticker}_different_optimizer.png'), dpi = dpi)  
-#plt.close()
+plt.savefig(os.path.join('plots', f'{ticker}_different_optimizer.png'), dpi = dpi)  
+plt.close()
 
 
 # Plot different inputs plot
@@ -124,26 +125,26 @@ SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 #plt.savefig(os.path.join('plots', f'{ticker}_different_n_step.png'), dpi = dpi)  
 #plt.close()
 
-# n_steps
-# load different n_step
-df_5 = pd.read_csv('inputs/batch_size_5_1.4735569169843192.csv')
-df_50 = pd.read_csv('inputs/batch_size_50_1.5455034104023815.csv')
-df_100 = pd.read_csv('inputs/batch_size_100_1.5686194127492417.csv')
+# batch_size
+# load different batch_size
+#df_5 = pd.read_csv('inputs/batch_size_5_1.4735569169843192.csv')
+#df_50 = pd.read_csv('inputs/batch_size_50_1.5455034104023815.csv')
+#df_100 = pd.read_csv('inputs/batch_size_100_1.5686194127492417.csv')
 
 
-fig, ax = plt.subplots(figsize = fig_size)
-for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-	label.set_fontsize(size)
+#fig, ax = plt.subplots(figsize = fig_size)
+#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+#	label.set_fontsize(size)
 
-ax.plot(orig_price['adjclose'], c='steelblue', linewidth = 0.9)
-ax.plot(df_5['adjclose_1'], c='olive', linewidth = 0.9)
-ax.plot(df_50['adjclose_1'], c='gold', linewidth = 0.9)
-ax.plot(df_100['adjclose_1'], c='crimson', linewidth = 0.9)
-plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
-plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
-plt.legend(['^N225','batch_size = 5','batch_size = 50','batch_size = 100'],
-	loc = 9, frameon = False, ncol = 5, fontsize = size)
-plt.show()
+#ax.plot(orig_price['adjclose'], c='steelblue', linewidth = 0.9)
+#ax.plot(df_5['adjclose_1'], c='olive', linewidth = 0.9)
+#ax.plot(df_50['adjclose_1'], c='gold', linewidth = 0.9)
+#ax.plot(df_100['adjclose_1'], c='crimson', linewidth = 0.9)
+#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+#plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
+#plt.legend(['^N225','batch_size = 5','batch_size = 50','batch_size = 100'],
+#	loc = 9, frameon = False, ncol = 5, fontsize = size)
+#plt.show()
 
 #plt.savefig(os.path.join('plots', f'{ticker}_different_batch_size.png'), dpi = dpi)  
 #plt.close()
