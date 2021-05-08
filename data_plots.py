@@ -78,23 +78,23 @@ SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 
 ## Plot different optimizer graphs
 
-fig, ax = plt.subplots(figsize = fig_size)
-for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-	label.set_fontsize(size)
+#fig, ax = plt.subplots(figsize = fig_size)
+#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+#	label.set_fontsize(size)
 
-ax.plot(orig_price['adjclose'], c='steelblue', linewidth = 0.9)
-ax.plot(adam['adjclose_1'], c='crimson', linewidth = 0.9)
-ax.plot(adamax['adjclose_1'], c='gold', linewidth = 0.9)
-ax.plot(nadam['adjclose_1'], c='olive', linewidth = 0.9)
-ax.plot(RMSprop['adjclose_1'], c='brown', linewidth = 0.9)
-ax.plot(SGD['adjclose_1'], c='deepskyblue', linewidth = 0.9)
-plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
-plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
-plt.legend(['^N225','Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 6, fontsize = size)
+#ax.plot(orig_price['adjclose'], c='steelblue', linewidth = 0.9)
+#ax.plot(adam['adjclose_1'], c='crimson', linewidth = 0.9)
+#ax.plot(adamax['adjclose_1'], c='gold', linewidth = 0.9)
+#ax.plot(nadam['adjclose_1'], c='olive', linewidth = 0.9)
+#ax.plot(RMSprop['adjclose_1'], c='brown', linewidth = 0.9)
+#ax.plot(SGD['adjclose_1'], c='deepskyblue', linewidth = 0.9)
+#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+#plt.xlabel("Time steps for test set", fontsize = size + 4, labelpad = 20)
+#plt.legend(['^N225','Adam','Adamax','Nadam','RMSprop','SGD'],loc = 9, frameon = False, ncol = 6, fontsize = size)
 #plt.show()
 
-plt.savefig(os.path.join('plots', f'{ticker}_different_optimizer.png'), dpi = dpi)  
-plt.close()
+#plt.savefig(os.path.join('plots', f'{ticker}_different_optimizer.png'), dpi = dpi)  
+#plt.close()
 
 
 # Plot different inputs plot
