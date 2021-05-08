@@ -33,11 +33,11 @@ pd.set_option('display.max_columns', None)
 # Data
 ticker = "^N225"
 start_date = "01.01.2010"
-end_date = "01.01.2020"
+end_date = "01.01.2021"
 # Days into the future (y)
-lookup_step = 5 
+lookup_step = 1 
 # Days back (X), Window size or the sequence length
-n_steps = 15
+n_steps = 100
 # Test size
 test_size = 0.2
 # Feature column
@@ -49,9 +49,9 @@ n_layers = 2
 # A dropout on the input means that for a given probability, 
 # the data on the input connection to each LSTM block will be 
 # excluded from node activation and weight updates. 
-dropout = 0.4
+dropout = 0.3
 # Optimizer
-optimizer = "RMSprop"
+optimizer = "Adamax"
 # Loss
 loss = "huber_loss"
 # LSTM cell
@@ -74,7 +74,8 @@ epochs = 1
 #class Ftrl: Optimizer that implements the FTRL algorithm. NOT
 #class SGD: Gradient descent (with momentum) optimizer. NOT
 
-#os.mkdir("optimizer")
+# create folder to store data frames
+#os.mkdir("inputs")
 
 def shuffle_in_unison(a, b):
     # shuffle two arrays in the same way
@@ -94,7 +95,7 @@ def load_data(ticker, start_date, end_date, n_steps=50, shuffle=True, lookup_ste
     # add date as a column
     df["date"] = df.index
     column_scaler = {}
-    # scale the data (prices) from 0 to 1
+    # scale the data (prices) to a value within 0 and 1
     for column in feature_columns:
         scaler = preprocessing.MinMaxScaler()
         df[column] = scaler.fit_transform(np.expand_dims(df[column].values, axis=1))
@@ -226,11 +227,6 @@ model.load_weights(model_path)
 # get the final dataframe for the testing set
 final_df = get_final_df(model, data)
 
-
-# save predicted price with different optimixations for later display
-different_optim = final_df[f'adjclose_{lookup_step}'].copy()
-different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
-
 # calculate the mean absolute error (MAE)
 mae = mean_absolute_error(final_df[f'true_adjclose_{lookup_step}'], 
     final_df[f'adjclose_{lookup_step}'])
@@ -247,6 +243,17 @@ daily_return_pred = final_df[f'adjclose_{lookup_step}'].pct_change()
 sharpe_ratio_pred = daily_return_pred.mean() / daily_return_pred.std()
 sharpe_ratio_pred = sharpe_ratio_pred * (252**0.5)
 #print(sharpe_ratio_pred)
+
+# save different input data frames
+### look_up
+#different_input = final_df[f'adjclose_{lookup_step}'].copy()
+#different_input.to_csv(os.path.join('inputs', f'{ticker}_{n_steps}_{sharpe_ratio_pred}.csv'))
+### look_up
+
+
+# save predicted price with different optimizations for later display
+#different_optim = final_df[f'adjclose_{lookup_step}'].copy()
+#different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
 
 
 # start and end date from test data set used for plot
@@ -274,13 +281,26 @@ def plot_graph(test_df):
 #print(model.summary())
 #print("Mean Absolute Error:", mae)
 #plot_graph(final_df)
-print(final_df)
+#print(final_df)
 
 
 
 
-# 2019-10-21
-# 2019-12-27
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

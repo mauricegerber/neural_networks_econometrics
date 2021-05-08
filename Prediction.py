@@ -24,13 +24,13 @@ newmodel = tf.keras.models.load_model('prediction.h5')
 #print(newmodel.summary())
 
 # Days into the future (y), same as used to train the model
-lookup_step = 5 
+lookup_step = 1 
 # same n_staps as used to train the model
-n_steps = 15
+n_steps = 20
 
 
 start_date = '01.01.2010'
-end_date = '30.04.2021'
+end_date = '01.01.2021'
 ticker = '^N225'
 
 fig_size = (15,8)
