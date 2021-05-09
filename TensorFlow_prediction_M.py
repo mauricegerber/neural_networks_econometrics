@@ -36,7 +36,7 @@ start_date = "01.01.2010"
 end_date = "01.01.2021"
 # Days into the future (y)
 lookup_step = 1 
-# Days back (X), Window size or the sequence length
+# Days back (X), window size or the sequence length
 n_steps = 100
 # Test size
 test_size = 0.2
@@ -49,15 +49,15 @@ n_layers = 2
 # dropout
 dropout = 0.3
 # Optimizer
-optimizer = "RMSprop"
+optimizer = "Nadam"
 # Loss
-loss = "huber_loss"
+loss = "mean_absolute_error"
 # LSTM cell
 cell = LSTM
 # LSTM neurons
 units = 256
 # Batch size
-batch_size = 80
+batch_size = 100
 # Epochs
 epochs = 1
 
@@ -235,12 +235,12 @@ mae = round(mae,1)
 daily_return_orig = final_df['adjclose'].pct_change()
 sharpe_ratio_orig = daily_return_orig.mean() / daily_return_orig.std()
 sharpe_ratio_orig = sharpe_ratio_orig * (252**0.5)
-#print(sharpe_ratio_orig)
+print(sharpe_ratio_orig)
 
 daily_return_pred = final_df[f'adjclose_{lookup_step}'].pct_change()
 sharpe_ratio_pred = daily_return_pred.mean() / daily_return_pred.std()
 sharpe_ratio_pred = sharpe_ratio_pred * (252**0.5)
-#print(sharpe_ratio_pred)
+print(sharpe_ratio_pred)
 
 # save different input data frames
 ### look_up
@@ -253,8 +253,8 @@ sharpe_ratio_pred = sharpe_ratio_pred * (252**0.5)
 
 
 # save predicted price with different optimizations for later display
-different_optim = final_df[f'adjclose_{lookup_step}'].copy()
-different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
+#different_optim = final_df[f'adjclose_{lookup_step}'].copy()
+#different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
 
 
 # start and end date from test data set used for plot
@@ -279,9 +279,9 @@ def plot_graph(test_df):
 
 
 ## print Output
-#print(model.summary())
+print(model.summary())
 #print("Mean Absolute Error:", mae)
-#plot_graph(final_df)
+plot_graph(final_df)
 #print(final_df)
 
 

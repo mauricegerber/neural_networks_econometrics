@@ -26,7 +26,7 @@ newmodel = tf.keras.models.load_model('prediction.h5')
 # Days into the future (y), same as used to train the model
 lookup_step = 1 
 # same n_staps as used to train the model
-n_steps = 20
+n_steps = 100
 
 
 start_date = '01.01.2010'
@@ -101,7 +101,7 @@ ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
 ax.scatter(x = x_pred_date, y = y_pred, c = 'orangered')
 plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
-plt.legend(['Actual', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2, fontsize = size)
+plt.legend(['^N225', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2, fontsize = size)
 
 plt.show()
 

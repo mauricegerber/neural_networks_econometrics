@@ -6,6 +6,7 @@ import numpy as np
 import os
 import pathlib
 from matplotlib import rcParams
+import statistics
 
 #os.mkdir("plots")
 
@@ -15,8 +16,9 @@ pd.set_option('display.max_rows', None)
 #start_date = '2018.11.06' if input data from "01.01.2010" to "01.01.2021"
 #end_date = '2020.12.29'
 
-start_date = '2018.11.06'
-end_date = '2020.12.29'
+
+start_date = '01.01.1995'
+end_date = '01.01.2021'
 ticker = '^N225'
 
 fig_size = (15,8)
@@ -29,7 +31,7 @@ df = si.get_data(ticker, start_date, end_date)
 orig_price = df.copy()
 orig_price.reset_index(inplace=True)
 df = df['adjclose']
-print(orig_price)
+#print(orig_price)
 
 # start and end date from data set used for plot
 start_plot = df.index[0]
@@ -52,14 +54,26 @@ end_plot = df.index[-1]
 
 ## Plot daily returns graph
 daily_returns = df.pct_change()
+daily_returns = list(daily_returns)
+del daily_returns[0]
+mean = statistics.mean(daily_returns)
+mean = round(mean, 6)
+std = statistics.stdev(daily_returns)
+lower = mean - std * 3
+upper = mean + std * 3
+print(mean)
 
-#fig, ax = plt.subplots(figsize = fig_size)
-#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-#	label.set_fontsize(size)
+fig, ax = plt.subplots(figsize = fig_size)
+for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+	label.set_fontsize(size)
 
-#ax.plot(daily_returns, c='steelblue', linewidth = 0.9)
-#plt.ylabel("Daily returns in %", fontsize = size + 4, labelpad = 20)
-#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
+ax.plot(daily_returns, c='steelblue', linewidth = 0.9)
+ax.axhline(mean, c='orangered')
+ax.axhline(lower, c='sandybrown', ls = ':')
+ax.axhline(upper, c='sandybrown', ls = ':')
+plt.ylabel("Daily returns in %", fontsize = size + 4, labelpad = 20)
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
+plt.legend(['^N225 returns [%]',f'mean:{mean}', 'upper and lower band'],loc = 9, frameon = False, ncol = 6, fontsize = size)
 #plt.show() # for saving plot, dont show it
 
 #plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = dpi)  
