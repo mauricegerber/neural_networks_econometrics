@@ -51,7 +51,7 @@ dropout = 0.3
 # Optimizer
 optimizer = "Nadam"
 # Loss
-loss = "mean_absolute_error"
+loss = "huber_loss"
 # LSTM cell
 cell = LSTM
 # LSTM neurons
