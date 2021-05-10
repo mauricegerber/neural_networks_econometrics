@@ -16,9 +16,12 @@ pd.set_option('display.max_rows', None)
 #start_date = '2018.11.06' if input data from "01.01.2010" to "01.01.2021"
 #end_date = '2020.12.29'
 
+#start_date = '2015.12.02' if input data from "01.01.1995" to "01.01.2021"
+#end_date = '2020.12.29'
 
-start_date = '01.01.1995'
-end_date = '01.01.2021'
+
+start_date = '12.02.2015'
+end_date = '12.29.2020'
 ticker = '^N225'
 
 fig_size = (15,8)
@@ -53,27 +56,27 @@ end_plot = df.index[-1]
 
 
 ## Plot daily returns graph
-daily_returns = df.pct_change()
-daily_returns = list(daily_returns)
-del daily_returns[0]
-mean = statistics.mean(daily_returns)
-mean = round(mean, 6)
-std = statistics.stdev(daily_returns)
-lower = mean - std * 3
-upper = mean + std * 3
-print(mean)
+#daily_returns = df.pct_change()
+#daily_returns = list(daily_returns)
+#del daily_returns[0]
+#mean = statistics.mean(daily_returns)
+#mean = round(mean, 6)
+#std = statistics.stdev(daily_returns)
+#lower = mean - std * 3
+#upper = mean + std * 3
+#print(mean)
 
-fig, ax = plt.subplots(figsize = fig_size)
-for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-	label.set_fontsize(size)
+#fig, ax = plt.subplots(figsize = fig_size)
+#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+#	label.set_fontsize(size)
 
-ax.plot(daily_returns, c='steelblue', linewidth = 0.9)
-ax.axhline(mean, c='orangered')
-ax.axhline(lower, c='sandybrown', ls = ':')
-ax.axhline(upper, c='sandybrown', ls = ':')
-plt.ylabel("Daily returns in %", fontsize = size + 4, labelpad = 20)
-plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
-plt.legend(['^N225 returns [%]',f'mean:{mean}', 'upper and lower band'],loc = 9, frameon = False, ncol = 6, fontsize = size)
+#ax.plot(daily_returns, c='steelblue', linewidth = 0.9)
+#ax.axhline(mean, c='orangered')
+#ax.axhline(lower, c='sandybrown', ls = ':')
+#ax.axhline(upper, c='sandybrown', ls = ':')
+#plt.ylabel("Daily returns in %", fontsize = size + 4, labelpad = 20)
+#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
+#plt.legend(['^N225 returns [%]',f'mean:{mean}', 'upper and lower band'],loc = 9, frameon = False, ncol = 6, fontsize = size)
 #plt.show() # for saving plot, dont show it
 
 #plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = dpi)  
@@ -84,11 +87,11 @@ plt.legend(['^N225 returns [%]',f'mean:{mean}', 'upper and lower band'],loc = 9,
 
 
 # load different optimizer
-adam = pd.read_csv('optimizer/^N225_Adam.csv')
-adamax = pd.read_csv('optimizer/^N225_Adamax.csv')
-nadam = pd.read_csv('optimizer/^N225_Nadam.csv')
-RMSprop = pd.read_csv('optimizer/^N225_RMSprop.csv')
-SGD = pd.read_csv('optimizer/^N225_SGD.csv')
+#adam = pd.read_csv('optimizer/^N225_Adam.csv')
+#adamax = pd.read_csv('optimizer/^N225_Adamax.csv')
+#nadam = pd.read_csv('optimizer/^N225_Nadam.csv')
+#RMSprop = pd.read_csv('optimizer/^N225_RMSprop.csv')
+#SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 
 ## Plot different optimizer graphs
 
@@ -164,6 +167,46 @@ SGD = pd.read_csv('optimizer/^N225_SGD.csv')
 #plt.close()
 
 
+# final model (several runs)
+# load different models
+df_1 = pd.read_csv('inputs/final_model_1.0197653932927881.csv')
+df_2 = pd.read_csv('inputs/final_model_0.9017172334599305.csv')
+df_3 = pd.read_csv('inputs/final_model_0.8564342617517773.csv')
+df_4 = pd.read_csv('inputs/final_model_0.8340478935634371.csv')
+df_5 = pd.read_csv('inputs/final_model_1.0085844505886985.csv')
+#df_6 = pd.read_csv('inputs/final_model_1.0414603299216036.csv')
+#df_7 = pd.read_csv('inputs/final_model_1.0426410622614488.csv')
+#df_8 = pd.read_csv('inputs/final_model_1.0434734767869251.csv')
+#df_9 = pd.read_csv('inputs/final_model_1.0773003997685027.csv')
+#df_10 = pd.read_csv('inputs/final_model_1.0934856463923748.csv')
 
+df_orig = pd.read_csv('inputs/final_model_orig_price.csv')
+
+fig, ax = plt.subplots(figsize = fig_size)
+for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+	label.set_fontsize(size)
+
+ax.plot(df_orig['adjclose'], c='steelblue', linewidth = 0.9)
+ax.plot(df_1['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+ax.plot(df_2['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+ax.plot(df_3['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+ax.plot(df_4['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+ax.plot(df_5['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+#ax.plot(df_6['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+#ax.plot(df_7['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+#ax.plot(df_8['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+#ax.plot(df_9['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+#ax.plot(df_10['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
+#plt.legend(['^N225','model_1'],loc = 9, frameon = False, ncol = 6, fontsize = size)
+plt.show() # for saving plot, dont show it
+
+#plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = dpi)  
+#plt.close()
+
+
+#print(df_orig['adjclose'])
+#print(df_1['adjclose_1'])
 
 

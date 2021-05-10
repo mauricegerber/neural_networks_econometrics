@@ -32,7 +32,7 @@ pd.set_option('display.max_columns', None)
 ## INPUT
 # Data
 ticker = "^N225"
-start_date = "01.01.2010"
+start_date = "01.01.1995"
 end_date = "01.01.2021"
 # Days into the future (y)
 lookup_step = 1 
@@ -49,7 +49,7 @@ n_layers = 2
 # dropout
 dropout = 0.3
 # Optimizer
-optimizer = "Nadam"
+optimizer = "RMSprop"
 # Loss
 loss = "huber_loss"
 # LSTM cell
@@ -59,7 +59,7 @@ units = 256
 # Batch size
 batch_size = 100
 # Epochs
-epochs = 1
+epochs = 2
 
 # Possible Optimizers
 #class Adam: Optimizer that implements the Adam algorithm. OK
@@ -242,8 +242,7 @@ sharpe_ratio_pred = daily_return_pred.mean() / daily_return_pred.std()
 sharpe_ratio_pred = sharpe_ratio_pred * (252**0.5)
 print(sharpe_ratio_pred)
 
-# save different input data frames
-### look_up
+# save different input data frames### look_up
 #different_input = final_df[f'adjclose_{lookup_step}'].copy()
 #different_input.to_csv(os.path.join('inputs', f'{ticker}_{n_steps}_{sharpe_ratio_pred}.csv'))
 
@@ -251,15 +250,23 @@ print(sharpe_ratio_pred)
 #different_input = final_df[f'adjclose_{lookup_step}'].copy()
 #different_input.to_csv(os.path.join('inputs', f'batch_size_{batch_size}_{sharpe_ratio_pred}.csv'))
 
+### final model
+different_input = final_df[f'adjclose_{lookup_step}'].copy()
+different_input.to_csv(os.path.join('inputs', f'final_model_{sharpe_ratio_pred}.csv'))
+# orig price
+different_input = final_df[f'adjclose'].copy()
+different_input.to_csv(os.path.join('inputs', f'final_model_orig_price.csv'))
 
 # save predicted price with different optimizations for later display
 #different_optim = final_df[f'adjclose_{lookup_step}'].copy()
 #different_optim.to_csv(os.path.join('optimizer', f'{ticker}_{optimizer}.csv'))
 
 
+
 # start and end date from test data set used for plot
 start_plot = final_df.index[0]
 end_plot = final_df.index[-1]
+
 
 # plot true/pred prices graph
 def plot_graph(test_df):
@@ -281,7 +288,7 @@ def plot_graph(test_df):
 ## print Output
 print(model.summary())
 #print("Mean Absolute Error:", mae)
-plot_graph(final_df)
+#plot_graph(final_df)
 #print(final_df)
 
 
