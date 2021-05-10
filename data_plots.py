@@ -7,6 +7,7 @@ import os
 import pathlib
 from matplotlib import rcParams
 import statistics
+from functools import reduce
 
 #os.mkdir("plots")
 
@@ -169,44 +170,85 @@ end_plot = df.index[-1]
 
 # final model (several runs)
 # load different models
-df_1 = pd.read_csv('inputs/final_model_1.0197653932927881.csv')
-df_2 = pd.read_csv('inputs/final_model_0.9017172334599305.csv')
-df_3 = pd.read_csv('inputs/final_model_0.8564342617517773.csv')
-df_4 = pd.read_csv('inputs/final_model_0.8340478935634371.csv')
-df_5 = pd.read_csv('inputs/final_model_1.0085844505886985.csv')
-#df_6 = pd.read_csv('inputs/final_model_1.0414603299216036.csv')
-#df_7 = pd.read_csv('inputs/final_model_1.0426410622614488.csv')
-#df_8 = pd.read_csv('inputs/final_model_1.0434734767869251.csv')
-#df_9 = pd.read_csv('inputs/final_model_1.0773003997685027.csv')
-#df_10 = pd.read_csv('inputs/final_model_1.0934856463923748.csv')
-
+df_1 = pd.read_csv('inputs/final_model_0.98757384906139.csv')
+df_2 = pd.read_csv('inputs/final_model_0.876493997041864.csv')
+df_3 = pd.read_csv('inputs/final_model_0.8340478935634371.csv')
+df_4 = pd.read_csv('inputs/final_model_0.8372230854291572.csv')
+df_5 = pd.read_csv('inputs/final_model_0.8453413742642574.csv')
+df_6 = pd.read_csv('inputs/final_model_0.8564342617517773.csv')
+df_7 = pd.read_csv('inputs/final_model_0.8720014660194579.csv')
+df_8 = pd.read_csv('inputs/final_model_0.8790596623010138.csv')
+df_9 = pd.read_csv('inputs/final_model_0.8792852113916764.csv')
+df_10 = pd.read_csv('inputs/final_model_0.8808236052156138.csv')
+df_11 = pd.read_csv('inputs/final_model_0.9017172334599305.csv')
+df_12 = pd.read_csv('inputs/final_model_0.9373521565329678.csv')
+df_13 = pd.read_csv('inputs/final_model_0.9764776498934619.csv')
+df_14 = pd.read_csv('inputs/final_model_0.9947950864659025.csv')
+df_15 = pd.read_csv('inputs/final_model_0.9949503806221899.csv')
+df_16 = pd.read_csv('inputs/final_model_0.9969162177673935.csv')
+df_17 = pd.read_csv('inputs/final_model_0.9987860161807575.csv')
+df_18 = pd.read_csv('inputs/final_model_1.0085844505886985.csv')
+df_19 = pd.read_csv('inputs/final_model_1.0095629338750394.csv')
+df_20 = pd.read_csv('inputs/final_model_1.0197653932927881.csv')
+df_21 = pd.read_csv('inputs/final_model_0.8769765561870677.csv')
+# original price
 df_orig = pd.read_csv('inputs/final_model_orig_price.csv')
+
+
+data_frames = [df_1['adjclose_1'], df_2['adjclose_1'], df_3['adjclose_1'], df_4['adjclose_1'], 
+df_5['adjclose_1'], df_6['adjclose_1'], df_7['adjclose_1'], df_8['adjclose_1'], 
+df_9['adjclose_1'], df_10['adjclose_1'], df_11['adjclose_1'], 
+df_12['adjclose_1'], df_13['adjclose_1'], df_14['adjclose_1'], 
+df_15['adjclose_1'], df_16['adjclose_1'], df_17['adjclose_1'],
+df_18['adjclose_1'], df_19['adjclose_1'], df_20['adjclose_1'],
+df_21['adjclose_1']]
+
+adjclose = pd.concat(data_frames, axis=1, keys=["1", "2", "3", "4",
+	"5", "6", "7","8", "9", "10","11", "12", "13","14", "15", "16",
+	"17", "18", "19", "20", "21"])
+
+col = adjclose.loc[: , "1":"21"]
+
+# calculate mean values
+adjclose['adjclose_mean'] = col.mean(axis=1)
+
 
 fig, ax = plt.subplots(figsize = fig_size)
 for label in (ax.get_xticklabels() + ax.get_yticklabels()):
 	label.set_fontsize(size)
 
-ax.plot(df_orig['adjclose'], c='steelblue', linewidth = 0.9)
-ax.plot(df_1['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-ax.plot(df_2['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-ax.plot(df_3['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-ax.plot(df_4['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-ax.plot(df_5['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-#ax.plot(df_6['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-#ax.plot(df_7['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-#ax.plot(df_8['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-#ax.plot(df_9['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
-#ax.plot(df_10['adjclose_1'], c='orangered', linewidth = 0.9, alpha = 0.6)
+ax.plot(df_orig['adjclose'], c='steelblue', linewidth = 1)
+ax.plot(adjclose['adjclose_mean'], c = 'springgreen', linewidth = 1)
+ax.plot(adjclose['1'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['2'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['3'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['4'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['5'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['6'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['7'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['8'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['9'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['10'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['11'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['12'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['13'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['14'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['15'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['16'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['17'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['18'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['19'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['20'], c='orangered', linewidth = 0.6, alpha = 0.6)
+ax.plot(adjclose['21'], c='orangered', linewidth = 0.6, alpha = 0.6)
 plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
-#plt.legend(['^N225','model_1'],loc = 9, frameon = False, ncol = 6, fontsize = size)
-plt.show() # for saving plot, dont show it
+plt.legend(['^N225', 'adjclose_mean','model $n_{1,...,21}$'],loc = 9, frameon = False, ncol = 6, fontsize = size)
+#plt.show() # for saving plot, dont show it
 
-#plt.savefig(os.path.join('plots', f'{ticker}_{start_date}_{end_date}_daily_returns.png'), dpi = dpi)  
-#plt.close()
+plt.savefig(os.path.join('plots', f'{ticker}_final_models_21.png'), dpi = dpi)  
+plt.close()
 
 
-#print(df_orig['adjclose'])
-#print(df_1['adjclose_1'])
+
 
 

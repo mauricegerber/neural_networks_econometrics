@@ -254,8 +254,8 @@ print(sharpe_ratio_pred)
 different_input = final_df[f'adjclose_{lookup_step}'].copy()
 different_input.to_csv(os.path.join('inputs', f'final_model_{sharpe_ratio_pred}.csv'))
 # orig price
-different_input = final_df[f'adjclose'].copy()
-different_input.to_csv(os.path.join('inputs', f'final_model_orig_price.csv'))
+#different_input = final_df[f'adjclose'].copy()
+#different_input.to_csv(os.path.join('inputs', f'final_model_orig_price.csv'))
 
 # save predicted price with different optimizations for later display
 #different_optim = final_df[f'adjclose_{lookup_step}'].copy()
@@ -288,7 +288,7 @@ def plot_graph(test_df):
 ## print Output
 print(model.summary())
 #print("Mean Absolute Error:", mae)
-#plot_graph(final_df)
+plot_graph(final_df)
 #print(final_df)
 
 
