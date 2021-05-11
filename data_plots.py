@@ -243,10 +243,10 @@ ax.plot(adjclose['21'], c='orangered', linewidth = 0.6, alpha = 0.6)
 plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
 plt.legend(['^N225', 'adjclose_mean','model $n_{1,...,21}$'],loc = 9, frameon = False, ncol = 6, fontsize = size)
-#plt.show() # for saving plot, dont show it
+plt.show() # for saving plot, dont show it
 
-plt.savefig(os.path.join('plots', f'{ticker}_final_models_21.png'), dpi = dpi)  
-plt.close()
+#plt.savefig(os.path.join('plots', f'{ticker}_final_models_21.png'), dpi = dpi)  
+#plt.close()
 
 
 
