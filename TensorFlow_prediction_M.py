@@ -33,11 +33,11 @@ pd.set_option('display.max_columns', None)
 # Data
 ticker = "^N225"
 start_date = "01.01.1995"
-end_date = "01.01.2021"
+end_date = "05.01.2021"
 # Days into the future (y)
-lookup_step = 1 
+lookup_step = 30 
 # Days back (X), window size or the sequence length
-n_steps = 100
+n_steps = 200
 # Test size
 test_size = 0.2
 # Feature column
@@ -251,8 +251,8 @@ print(sharpe_ratio_pred)
 #different_input.to_csv(os.path.join('inputs', f'batch_size_{batch_size}_{sharpe_ratio_pred}.csv'))
 
 ### final model
-different_input = final_df[f'adjclose_{lookup_step}'].copy()
-different_input.to_csv(os.path.join('inputs', f'final_model_{sharpe_ratio_pred}.csv'))
+#different_input = final_df[f'adjclose_{lookup_step}'].copy()
+#different_input.to_csv(os.path.join('inputs', f'final_model_{sharpe_ratio_pred}.csv'))
 # orig price
 #different_input = final_df[f'adjclose'].copy()
 #different_input.to_csv(os.path.join('inputs', f'final_model_orig_price.csv'))
@@ -288,7 +288,7 @@ def plot_graph(test_df):
 ## print Output
 print(model.summary())
 #print("Mean Absolute Error:", mae)
-plot_graph(final_df)
+#plot_graph(final_df)
 #print(final_df)
 
 

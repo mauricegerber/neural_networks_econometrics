@@ -20,9 +20,9 @@ pd.set_option('display.max_rows', None)
 #start_date = '2015.12.02' if input data from "01.01.1995" to "01.01.2021"
 #end_date = '2020.12.29'
 
-
-start_date = '12.02.2015'
-end_date = '12.29.2020'
+# M/D/Y
+start_date = '01.01.2010'
+end_date = '05.10.2021'
 ticker = '^N225'
 
 fig_size = (15,8)

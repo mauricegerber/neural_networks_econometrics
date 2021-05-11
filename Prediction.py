@@ -24,13 +24,13 @@ newmodel = tf.keras.models.load_model('prediction.h5')
 #print(newmodel.summary())
 
 # Days into the future (y), same as used to train the model
-lookup_step = 1 
+lookup_step = 30 
 # same n_staps as used to train the model
-n_steps = 100
+n_steps = 200
 
-
+# M/D/Y
 start_date = '01.01.2010'
-end_date = '01.01.2021'
+end_date = '05.01.2021'
 ticker = '^N225'
 
 fig_size = (15,8)
@@ -56,14 +56,21 @@ y_pred = np.squeeze(column_scaler["adjclose"].inverse_transform(y_pred))
 y_pred = y_pred.astype(int)
 print(y_pred)
 
+y_pred_1 = 27942
+y_pred_2 = 29316
+y_pred_3 = 29146
+y_pred_4 = 29242
+y_pred_5 = 28146
+y_pred_6 = 28812
+y_pred_7 = 29036
+y_pred_8 = 28790
+y_pred_9 = 28933
+y_pred_10 = 28017
+
 index_data = index_data.reset_index()
 index_data.reset_index(inplace=True)
 index_data.columns = ['index', 'date', 'adjclose']
-print(index_data)
-
-
-# Wed. 5th = 28921.031
-# Wed. 5th = 27989.307
+#print(index_data)
 
 # Business day function to calculate the date in the future
 def business_days(from_date, add_days):
@@ -98,16 +105,25 @@ for label in (ax.get_xticklabels() + ax.get_yticklabels()):
    label.set_fontsize(size)
 
 ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
-ax.scatter(x = x_pred_date, y = y_pred, c = 'orangered')
+ax.scatter(x = x_pred_date, y = y_pred_1, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_2, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_3, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_4, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_5, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_6, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_7, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_8, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_9, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_10, c = 'orangered', alpha = 0.4, s = 100)
 plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
-plt.legend(['^N225', f'Predicted price in JPY: {y_pred}'], loc = 9, frameon = False, ncol = 2, fontsize = size)
+plt.legend(['^N225', f'Predicted price in JPY'], loc = 9, frameon = False, ncol = 2, fontsize = size)
 
-plt.show()
+#plt.show()
 
 # save plot
-#plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = dpi)  
-#plt.close()
+plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = dpi)  
+plt.close()
 
 
 
