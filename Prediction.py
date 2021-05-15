@@ -119,11 +119,11 @@ plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
 plt.legend(['^N225', f'Predicted price in JPY'], loc = 9, frameon = False, ncol = 2, fontsize = size)
 
-#plt.show()
+plt.show()
 
 # save plot
-plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = dpi)  
-plt.close()
+#plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = dpi)  
+#plt.close()
 
 
 
