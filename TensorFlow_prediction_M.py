@@ -35,9 +35,9 @@ ticker = "^N225"
 start_date = "01.01.2010"
 end_date = "05.01.2021"
 # Days into the future (y)
-lookup_step = 2 
+lookup_step = 30 
 # Days back (X), window size or the sequence length
-n_steps = 5
+n_steps = 200
 # Test size
 test_size = 0.2
 # Feature column
@@ -45,7 +45,7 @@ feature_columns=['adjclose', 'volume', 'open', 'high', 'low']
 # shuffle of training/test data
 shuffle = False
 # Layers 
-n_layers = 4
+n_layers = 2
 # dropout
 dropout = 0.3
 # Optimizer
@@ -289,23 +289,8 @@ def plot_graph(test_df):
 print(model.summary())
 #print("Mean Absolute Error:", mae)
 #plot_graph(final_df)
-#print(final_df)
+print(final_df)
 
-# 2
-# 793,857
-# 1.615100266570783
-
-# 3
-# 1,319,169
-# 1.457351208906496
-
-# 4
-# 1,844,481
-# 1.4119590700191704
-
-# 5
-# 2,369,793
-# 1.1976629511095334
 
 
 
