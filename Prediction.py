@@ -8,20 +8,22 @@ from yahoo_fin import stock_info as si
 from tensorflow import keras
 from matplotlib import rcParams
 
+
+from time import time
 import os
 import datetime
 import numpy as np
 import pandas as pd
 import time
+import random
 import matplotlib.pyplot as plt
+from matplotlib import pyplot
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 newmodel = tf.keras.models.load_model('prediction.h5')
-#print(newmodel.summary())
 
 # Days into the future (y), same as used to train the model
 lookup_step = 30 
@@ -39,7 +41,8 @@ df = si.get_data(ticker, start_date, end_date)
 df = df[['adjclose', 'volume', 'open', 'high', 'low']]
 df = df[-n_steps:]
 index_data = df['adjclose'].copy()
-print(df)
+acf_data = df['adjclose'].copy()
+#print(df)
 
 
 column_scaler = {}
@@ -48,8 +51,7 @@ for column in df.columns.values:
     df[column] = scaler.fit_transform(np.expand_dims(df[column].values, axis=1))
     column_scaler[column] = scaler
 
-
-#df = np.array([df])
+df = np.array([df])
 
 # prediction function
 y_pred = newmodel.predict(df)
@@ -57,10 +59,9 @@ y_pred = np.squeeze(column_scaler["adjclose"].inverse_transform(y_pred))
 y_pred = y_pred.astype(int)
 #print(y_pred)
 
-y_pred_1 = 27942;y_pred_2 = 29316;y_pred_3 = 29146
-y_pred_4 = 29242;y_pred_5 = 28146;y_pred_6 = 28812
-y_pred_7 = 29036;y_pred_8 = 28790;y_pred_9 = 28933
-y_pred_10 = 28017
+y_pred_1 = 27942;y_pred_2 = 29316;y_pred_3 = 29146;y_pred_4 = 29242
+y_pred_5 = 28146;y_pred_6 = 28812;y_pred_7 = 29036;y_pred_8 = 28790
+y_pred_9 = 28933;y_pred_10 = 28017
 
 index_data = index_data.reset_index()
 index_data.reset_index(inplace=True)
@@ -95,64 +96,38 @@ rcParams['font.serif'] = ['Times']
 
 
 # Plot prediction
-#fig, ax = plt.subplots(figsize = fig_size)
-#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-#   label.set_fontsize(size)
+fig, ax = plt.subplots(figsize = fig_size)
+for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+   label.set_fontsize(size)
 
-#ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
-#ax.scatter(x = x_pred_date, y = y_pred_1, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_2, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_3, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_4, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_5, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_6, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_7, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_8, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_9, c = 'orangered', alpha = 0.4, s = 100)
-#ax.scatter(x = x_pred_date, y = y_pred_10, c = 'orangered', alpha = 0.4, s = 100)
-#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
-#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
-#plt.legend(['^N225', f'Predicted price in JPY'], loc = 9, frameon = False, ncol = 2, fontsize = size)
+ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
+ax.scatter(x = x_pred_date, y = y_pred_1, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_2, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_3, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_4, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_5, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_6, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_7, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_8, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_9, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_10, c = 'orangered', alpha = 0.4, s = 100)
+ax.scatter(x = x_pred_date, y = 29117.531240121705, c = 'green', s = 50)
+plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
+plt.legend(['^N225', f'Predicted price in JPY'], loc = 9, frameon = False, ncol = 2, fontsize = size)
 
-#plt.show()
+plt.show()
 
 # save plot
 #plt.savefig(os.path.join('plots', f'{ticker}_prediction_data.png'), dpi = dpi)  
 #plt.close()
 
 
-# linear regression forecast
-
-print(index_data)
-#print(x_pred_date)
-
-#X = index_data['index']
-#X = X.to_string(index=False)
-#y = index_data['adjclose']
-#y = y.to_string(index=False)
-
-#X = index_data.iloc[:, 1].values
-#y = index_data.iloc[:, 2].values
-
-#X = [1,2,3,4,5,6,7,8,9]
-X = np.array([1,2,3,4,5,6,7,8,9]).reshape((-1, 1))
-y = np.array([22614.68, 22438.65, 22529.28, 22529.28, 22945.50,
-22770.35,22770.35,23096.75,23296.76])
-#X = [X] 
-#y = [y]
-
-print(X)
-print(y)
 
 
-model = LinearRegression()
-model.fit(X, y)
 
-#X_predict = x_pred_date
-X_predict = np.array(10).reshape((-1, 1))  
-y_predict = model.predict(X_predict)
-#y_predict = model.predict([[13]])
-print(y_predict)
+
+
 
 
 
