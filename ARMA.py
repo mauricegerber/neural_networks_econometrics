@@ -54,7 +54,7 @@ predictions = model_fit.forecast(40)
 print(predictions[0])
 
 
-print(df['adjclose'].iloc[-1])
+#print(df['adjclose'].iloc[-1])
 
 
 x, x_diff = df['adjclose'].iloc[-1], predictions[0]

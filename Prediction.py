@@ -101,20 +101,20 @@ for label in (ax.get_xticklabels() + ax.get_yticklabels()):
    label.set_fontsize(size)
 
 ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
-ax.scatter(x = x_pred_date, y = y_pred_1, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_2, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_3, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_4, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_5, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_6, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_7, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_8, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_9, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = y_pred_10, c = 'orangered', alpha = 0.4, s = 100)
-ax.scatter(x = x_pred_date, y = 29117.531240121705, c = 'green', s = 50)
+ax.scatter(x = x_pred_date, y = y_pred_1, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_2, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_3, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_4, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_5, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_6, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_7, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_8, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_9, c = 'orangered', alpha = 0.3, s = 100)
+ax.scatter(x = x_pred_date, y = y_pred_10, c = 'orangered', alpha = 0.3, s = 100)
 plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
 plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
-plt.legend(['^N225', f'Predicted price in JPY'], loc = 9, frameon = False, ncol = 2, fontsize = size)
+plt.ylim(21000, 31500)
+plt.legend(['^N225', 'Predicted price in JPY'], loc = 9, frameon = False, ncol = 2, fontsize = size)
 
 plt.show()
 
@@ -128,7 +128,34 @@ plt.show()
 
 
 
+# Plot prediction ARMA
+#fig, ax = plt.subplots(figsize = fig_size)
+#for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+#   label.set_fontsize(size)
 
+#ax.plot(index_data['date'], index_data['adjclose'], c = 'steelblue')
+#ax.scatter(x = x_pred_date, y = 29117.5312, c = 'green', s = 50)
+#ax.scatter(x = x_pred_date, y = y_pred_1, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_2, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_3, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_4, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_5, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_6, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_7, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_8, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_9, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = y_pred_10, c = 'orangered', alpha = 0.3, s = 100)
+#ax.scatter(x = x_pred_date, y = 29117.5312, c = 'green', s = 50)
+#plt.ylabel("Adjusted closing price in JPY", fontsize = size + 4, labelpad = 20)
+#plt.xlabel(f"Date from {start_plot.strftime('%Y-%m-%d')} to {end_plot.strftime('%Y-%m-%d')}", fontsize = size + 4, labelpad = 20)
+#plt.ylim(21000, 31500)
+#plt.legend(['^N225', 'ARMA prediction', 'LSTM predictions'], loc = 9, frameon = False, ncol = 3, fontsize = size)
+
+#plt.show()
+
+# save plot
+#plt.savefig(os.path.join('plots', f'{ticker}_prediction_data_ARMA.png'), dpi = dpi)  
+#plt.close()
 
 
 
