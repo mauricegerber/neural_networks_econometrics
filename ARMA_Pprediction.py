@@ -4,6 +4,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from yahoo_fin import stock_info as si
 from matplotlib import pyplot
 
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,11 +34,15 @@ print(diff_data)
 
 # ACF plot
 plot_acf(diff_data, lags = 20)
-pyplot.show()
+#pyplot.show()
+#plt.savefig(os.path.join('plots', f'{ticker}_ACF.png'), dpi = 400)  
+#plt.close()
 
 # PACF plot
 plot_pacf(diff_data, lags = 20)
 #pyplot.show()
+#plt.savefig(os.path.join('plots', f'{ticker}_PACF.png'), dpi = 400)  
+#plt.close()
 
 
 # ARMA
